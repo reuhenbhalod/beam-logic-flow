@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -7,11 +7,14 @@ import {
   FileText, 
   Menu,
   Clock,
-  User
+  User,
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/hooks/use-auth';
 import CustomCursor from './CustomCursor';
+import TimeLogger from './TimeLogger';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -23,6 +26,8 @@ const navigation = [
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const Sidebar = ({ mobile = false }) => (
     <div className={`flex h-full flex-col ${mobile ? 'w-full' : 'w-64'}`}>
@@ -63,12 +68,23 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">
-              John Engineer
+              {user?.user_metadata?.full_name || user?.email || 'User'}
             </p>
             <p className="text-xs text-muted-foreground truncate">
-              Senior Engineer
+              {user?.user_metadata?.role || 'Engineer'}
             </p>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={async () => {
+              await signOut();
+              navigate('/signin');
+            }}
+            data-interactive
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>
@@ -113,15 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </h2>
             </div>
             <div className="ml-4 flex items-center md:ml-6 space-x-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
-                data-interactive
-              >
-                <Clock className="h-4 w-4 mr-2" />
-                Log Time
-              </Button>
+              <TimeLogger />
             </div>
           </div>
         </div>

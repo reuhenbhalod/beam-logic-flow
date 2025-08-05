@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import TimeLogger from '@/components/TimeLogger';
 
 const weeklyData = [
   { day: 'Mon', drafting: 6, engineering: 8, pm: 2 },
@@ -24,10 +25,7 @@ const Dashboard = () => {
     <div className="space-y-6 animate-fade-in">
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-4">
-        <Button className="bg-engineering-red hover:bg-engineering-red-dark" data-interactive>
-          <Plus className="h-4 w-4 mr-2" />
-          Log Time
-        </Button>
+        <TimeLogger />
         <Button variant="outline" className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white" data-interactive>
           <Plus className="h-4 w-4 mr-2" />
           Add Project

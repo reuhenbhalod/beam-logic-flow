@@ -117,8 +117,8 @@ const ChartTooltipContent = React.forwardRef<
     indicator?: "line" | "dot" | "dashed"
     nameKey?: string
     labelKey?: string
-    labelFormatter?: (value: any, payload: Array<Payload<ValueType, NameType>>) => React.ReactNode
-    formatter?: (value: any, name: any, item: any, index: number) => React.ReactNode
+    labelFormatter?: (value: unknown, payload: Array<Payload<ValueType, NameType>>) => React.ReactNode
+    formatter?: (value: unknown, name: unknown, item: unknown, index: number) => React.ReactNode
     color?: string
     labelClassName?: string
   }
@@ -272,7 +272,7 @@ const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     hideIcon?: boolean
-    payload?: Array<any>
+    payload?: Array<unknown>
     verticalAlign?: "top" | "bottom"
     nameKey?: string
   }
@@ -296,7 +296,7 @@ const ChartLegendContent = React.forwardRef<
           className
         )}
       >
-        {payload.map((item: any) => {
+        {payload.map((item: unknown) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
 
@@ -346,7 +346,7 @@ function getPayloadConfigFromPayload(
       ? payload.payload
       : undefined
 
-  let configLabelKey: string = key
+  const configLabelKey: string = key
 
   if (
     key in config ||
