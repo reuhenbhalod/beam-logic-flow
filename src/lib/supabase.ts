@@ -48,6 +48,12 @@ export type Database = {
           created_by: string
           created_at: string
           updated_at: string
+          client_name: string
+          project_type: string
+          fee: number
+          start_date: string
+          end_date: string
+          target_hourly_rate: number
         }
         Insert: {
           id?: string
@@ -58,6 +64,12 @@ export type Database = {
           created_by: string
           created_at?: string
           updated_at?: string
+          client_name: string
+          project_type: string
+          fee: number
+          start_date: string
+          end_date?: string
+          target_hourly_rate: number
         }
         Update: {
           id?: string
@@ -68,6 +80,12 @@ export type Database = {
           created_by?: string
           created_at?: string
           updated_at?: string
+          client_name?: string
+          project_type?: string
+          fee?: number
+          start_date?: string
+          end_date?: string
+          target_hourly_rate?: number
         }
       }
       time_entries: {
@@ -79,6 +97,7 @@ export type Database = {
           description: string
           date: string
           created_at: string
+          role: string
         }
         Insert: {
           id?: string
@@ -88,6 +107,7 @@ export type Database = {
           description: string
           date: string
           created_at?: string
+          role: string
         }
         Update: {
           id?: string
@@ -97,6 +117,7 @@ export type Database = {
           description?: string
           date?: string
           created_at?: string
+          role?: string
         }
       }
     }

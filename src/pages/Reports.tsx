@@ -48,22 +48,109 @@ const Reports = () => {
   }
 
   const generateReport = (type: string) => {
-    const data = {
-      projects,
-      timeEntries,
-      generatedAt: new Date().toISOString(),
-      user: user?.email,
+    let data: any
+    let filename: string
+    let contentType: string
+
+    switch (type) {
+      case 'csv':
+        data = generateCSV()
+        filename = `project-report-${new Date().toISOString().split('T')[0]}.csv`
+        contentType = 'text/csv'
+        break
+      case 'pdf':
+        // For now, generate a formatted text report that can be printed as PDF
+        data = generatePDFReport()
+        filename = `project-report-${new Date().toISOString().split('T')[0]}.txt`
+        contentType = 'text/plain'
+        break
+      case 'email':
+        generateEmailReport()
+        return
+      default:
+        data = {
+          projects,
+          timeEntries,
+          generatedAt: new Date().toISOString(),
+          user: user?.email,
+        }
+        filename = `${type}-report-${new Date().toISOString().split('T')[0]}.json`
+        contentType = 'application/json'
     }
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const blob = new Blob([data], { type: contentType })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${type}-report-${new Date().toISOString().split('T')[0]}.json`
+    a.download = filename
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+  }
+
+  const generateCSV = () => {
+    const headers = ['Project Name', 'Client', 'Type', 'Fee', 'Hours', 'Cost', 'Margin', 'Status', 'Progress']
+    const rows = projects.map(project => {
+      const projectHours = timeEntries
+        .filter(entry => entry.project_id === project.id)
+        .reduce((sum, entry) => sum + entry.hours, 0)
+      const projectCost = projectHours * (project.target_hourly_rate || 0)
+      const margin = (project.fee || 0) - projectCost
+      
+      return [
+        project.name,
+        project.client_name || 'N/A',
+        project.project_type || 'N/A',
+        project.fee || 0,
+        projectHours,
+        projectCost.toFixed(2),
+        margin.toFixed(2),
+        project.status,
+        project.progress
+      ].join(',')
+    })
+    
+    return [headers.join(','), ...rows].join('\n')
+  }
+
+  const generatePDFReport = () => {
+    const report = [
+      'PROJECT MANAGEMENT REPORT',
+      'Generated: ' + new Date().toLocaleDateString(),
+      'User: ' + (user?.email || 'Unknown'),
+      '',
+      'PROJECT SUMMARY:',
+      'Total Projects: ' + projects.length,
+      'Active Projects: ' + projects.filter(p => p.status === 'active').length,
+      'Total Hours: ' + timeEntries.reduce((sum, entry) => sum + entry.hours, 0),
+      'Total Fees: $' + projects.reduce((sum, p) => sum + (p.fee || 0), 0).toLocaleString(),
+      '',
+      'PROJECT DETAILS:',
+      ...projects.map(project => {
+        const projectHours = timeEntries
+          .filter(entry => entry.project_id === project.id)
+          .reduce((sum, entry) => sum + entry.hours, 0)
+        return [
+          '  ' + project.name,
+          '    Client: ' + (project.client_name || 'N/A'),
+          '    Fee: $' + (project.fee || 0).toLocaleString(),
+          '    Hours: ' + projectHours,
+          '    Progress: ' + project.progress + '%',
+          '    Status: ' + project.status,
+          ''
+        ].join('\n')
+      })
+    ].join('\n')
+    
+    return report
+  }
+
+  const generateEmailReport = () => {
+    const subject = encodeURIComponent('Project Management Report - ' + new Date().toLocaleDateString())
+    const body = encodeURIComponent(generatePDFReport())
+    const mailtoLink = `mailto:?subject=${subject}&body=${body}`
+    window.open(mailtoLink)
   }
 
   const filteredProjects = projects.filter(project =>
@@ -96,19 +183,27 @@ const Reports = () => {
         <div className="flex space-x-2">
           <Button
             variant="outline"
-            onClick={() => generateReport('projects')}
+            onClick={() => generateReport('csv')}
             className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
           >
             <Download className="h-4 w-4 mr-2" />
-            Export Projects
+            Export CSV
           </Button>
           <Button
             variant="outline"
-            onClick={() => generateReport('time')}
+            onClick={() => generateReport('pdf')}
             className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
           >
-            <Download className="h-4 w-4 mr-2" />
-            Export Time
+            <FileText className="h-4 w-4 mr-2" />
+            Export PDF
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => generateReport('email')}
+            className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            Email Report
           </Button>
         </div>
       </div>

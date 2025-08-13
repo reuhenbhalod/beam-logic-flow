@@ -39,15 +39,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
+    
+    // If sign in is successful, ensure user profile exists
+    if (!error && data.user) {
+      const { data: profileData } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', data.user.id)
+        .single()
+      
+      // If no profile exists, create one
+      if (!profileData) {
+        await supabase
+          .from('users')
+          .insert([
+            {
+              id: data.user.id,
+              email: data.user.email,
+              full_name: data.user.user_metadata?.full_name || 'User',
+              role: 'engineer',
+            },
+          ])
+      }
+    }
+    
     return { error }
   }
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -57,13 +81,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     })
 
-    if (!error) {
+    if (!error && data.user) {
       // Create user profile in users table
       const { error: profileError } = await supabase
         .from('users')
         .insert([
           {
-            id: (await supabase.auth.getUser()).data.user?.id,
+            id: data.user.id,
             email,
             full_name: fullName,
             role: 'engineer',

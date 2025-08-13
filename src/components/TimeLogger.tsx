@@ -24,7 +24,8 @@ const TimeLogger = () => {
     project_id: '',
     hours: 0,
     description: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    role: ''
   })
 
   const { user } = useAuth()
@@ -73,7 +74,8 @@ const TimeLogger = () => {
         project_id: '',
         hours: 0,
         description: '',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        role: ''
       })
       
       setTimeout(() => {
@@ -124,6 +126,25 @@ const TimeLogger = () => {
                     {project.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="role">Role</Label>
+            <Select 
+              value={formData.role} 
+              onValueChange={(value) => setFormData({ ...formData, role: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select your role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="engineering">Engineering</SelectItem>
+                <SelectItem value="drafting">Drafting</SelectItem>
+                <SelectItem value="pm">Project Management</SelectItem>
+                <SelectItem value="consulting">Consulting</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>

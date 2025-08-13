@@ -29,6 +29,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
+  // Debug: Log user state
+  console.log('Current user:', user);
+  console.log('Current location:', location.pathname);
+
   const Sidebar = ({ mobile = false }) => (
     <div className={`flex h-full flex-col ${mobile ? 'w-full' : 'w-64'}`}>
       <div className="flex h-16 shrink-0 items-center border-b border-border px-6 bg-gradient-primary">

@@ -127,12 +127,10 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
 @layer base {
   * {
     @apply border-border;
-    cursor: none; /* Hide default cursor */
   }
 
   body {
     @apply bg-background text-foreground;
-    cursor: none;
     overflow-x: hidden;
   }
 
@@ -150,11 +148,20 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
     transform: translate(-50%, -50%);
     transition: transform 0.1s ease-out;
     mix-blend-mode: difference;
+    /* Fallback for better visibility */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
 
   .custom-cursor.hover {
     transform: translate(-50%, -50%) scale(1.5);
     background: hsl(var(--engineering-red-light));
+  }
+
+  /* Disable custom cursor on mobile devices */
+  @media (max-width: 768px) {
+    .custom-cursor {
+      display: none;
+    }
   }
 
   /* Abstract background patterns */
@@ -169,7 +176,7 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
   button:hover, 
   [role="button"]:hover,
   a:hover {
-    cursor: none !important;
+    cursor: pointer;
   }
 
   /* Engineering card styling */

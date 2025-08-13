@@ -70,6 +70,7 @@ const CustomCursor = () => {
       style={{
         left: position.x,
         top: position.y,
+        opacity: isHovering ? 1 : 0.8,
       }}
     />
   );

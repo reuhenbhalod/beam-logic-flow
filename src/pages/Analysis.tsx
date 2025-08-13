@@ -16,6 +16,7 @@ const Analysis = () => {
   const [projects, setProjects] = useState<Project[]>([])
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState('month')
   const { user } = useAuth()
 
@@ -25,38 +26,67 @@ const Analysis = () => {
 
   const fetchData = async () => {
     try {
+      console.log('Fetching data...')
+      setError(null)
+      
       // Fetch projects
-      const { data: projectsData } = await supabase
+      const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
         .select('*')
 
+      if (projectsError) {
+        console.error('Projects error:', projectsError)
+        throw new Error(`Failed to fetch projects: ${projectsError.message}`)
+      }
+
       // Fetch time entries
-      const { data: timeData } = await supabase
+      const { data: timeData, error: timeError } = await supabase
         .from('time_entries')
         .select('*')
 
+      if (timeError) {
+        console.error('Time entries error:', timeError)
+        throw new Error(`Failed to fetch time entries: ${timeError.message}`)
+      }
+
+      console.log('Projects data:', projectsData)
+      console.log('Time entries data:', timeData)
+
       setProjects(projectsData || [])
       setTimeEntries(timeData || [])
-    } catch (error) {
-      console.error('Error fetching data:', error)
+    } catch (err) {
+      console.error('Error in fetchData:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  // Calculate statistics
-  const totalProjects = projects.length
-  const activeProjects = projects.filter(p => p.status === 'active').length
-  const completedProjects = projects.filter(p => p.status === 'completed').length
-  const totalHours = timeEntries.reduce((sum, entry) => sum + entry.hours, 0)
-  const avgProgress = projects.length > 0 ? projects.reduce((sum, p) => sum + p.progress, 0) / projects.length : 0
+  // Safe calculations with error handling
+  const totalProjects = projects?.length || 0
+  const activeProjects = projects?.filter(p => p.status === 'active')?.length || 0
+  const completedProjects = projects?.filter(p => p.status === 'completed')?.length || 0
+  const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.hours || 0), 0) || 0
+  const avgProgress = projects?.length > 0 ? projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length : 0
+  
+  // Safe financial calculations
+  const totalFees = projects?.reduce((sum, p) => sum + (Number(p.fee) || 0), 0) || 0
+  const totalCost = timeEntries?.reduce((sum, entry) => {
+    const project = projects?.find(p => p.id === entry.project_id)
+    const hourlyRate = Number(project?.target_hourly_rate) || 0
+    return sum + ((entry.hours || 0) * hourlyRate)
+  }, 0) || 0
+  
+  const grossMargin = totalFees - totalCost
+  const profitMargin = totalFees > 0 ? (grossMargin / totalFees) * 100 : 0
+  const effectiveHourlyRate = totalHours > 0 ? totalFees / totalHours : 0
 
   // Generate chart data
   const projectStatusData = [
     { name: 'Active', value: activeProjects, color: 'hsl(var(--status-active))' },
     { name: 'Completed', value: completedProjects, color: 'hsl(var(--status-info))' },
-    { name: 'Planning', value: projects.filter(p => p.status === 'planning').length, color: 'hsl(var(--status-warning))' },
-    { name: 'On Hold', value: projects.filter(p => p.status === 'on-hold').length, color: 'hsl(var(--status-danger))' },
+    { name: 'Planning', value: projects?.filter(p => p.status === 'planning')?.length || 0, color: 'hsl(var(--status-warning))' },
+    { name: 'On Hold', value: projects?.filter(p => p.status === 'on-hold')?.length || 0, color: 'hsl(var(--status-danger))' },
   ]
 
   const weeklyHoursData = [
@@ -69,26 +99,54 @@ const Analysis = () => {
     { day: 'Sun', hours: 2.0 },
   ]
 
-  const projectProgressData = projects.slice(0, 5).map(project => ({
+  const projectProgressData = projects?.slice(0, 5).map(project => ({
     name: project.name,
-    progress: project.progress,
-  }))
+    progress: project.progress || 0,
+  })) || []
 
-  const monthlyTrendData = [
-    { month: 'Jan', projects: 12, hours: 180 },
-    { month: 'Feb', projects: 15, hours: 220 },
-    { month: 'Mar', projects: 18, hours: 250 },
-    { month: 'Apr', projects: 14, hours: 200 },
-    { month: 'May', projects: 20, hours: 280 },
-    { month: 'Jun', projects: 22, hours: 300 },
-  ]
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Analysis</h1>
+            <p className="text-muted-foreground">Project performance and analytics</p>
+          </div>
+        </div>
+        
+        <Card className="border-red-200 bg-red-50">
+          <CardHeader>
+            <CardTitle className="text-red-800">Error Loading Analysis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-700">{error}</p>
+            <button 
+              onClick={fetchData}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Retry
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-engineering-red mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading analysis...</p>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Analysis</h1>
+            <p className="text-muted-foreground">Project performance and analytics</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-engineering-red mx-auto"></div>
+            <p className="mt-2 text-muted-foreground">Loading analysis...</p>
+          </div>
         </div>
       </div>
     )
@@ -115,6 +173,19 @@ const Analysis = () => {
         </Select>
       </div>
 
+      {/* Debug Info */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardHeader>
+          <CardTitle className="text-blue-800">Debug Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-blue-700">
+            Projects: {totalProjects} | Time Entries: {timeEntries?.length || 0} | 
+            Total Hours: {totalHours} | Total Fees: ${totalFees}
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="engineering-card">
@@ -125,7 +196,7 @@ const Analysis = () => {
           <CardContent>
             <div className="text-2xl font-bold">{totalProjects}</div>
             <p className="text-xs text-muted-foreground">
-              +{Math.round((totalProjects / 20) * 100)}% from last month
+              {activeProjects} active
             </p>
           </CardContent>
         </Card>
@@ -138,7 +209,7 @@ const Analysis = () => {
           <CardContent>
             <div className="text-2xl font-bold text-status-active">{activeProjects}</div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((activeProjects / totalProjects) * 100)}% of total
+              {totalProjects > 0 ? Math.round((activeProjects / totalProjects) * 100) : 0}% of total
             </p>
           </CardContent>
         </Card>
@@ -149,9 +220,9 @@ const Analysis = () => {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalHours}</div>
+            <div className="text-2xl font-bold">{totalHours.toFixed(1)}</div>
             <p className="text-xs text-muted-foreground">
-              +{Math.round((totalHours / 160) * 100)}% from last month
+              Hours logged
             </p>
           </CardContent>
         </Card>
@@ -164,136 +235,24 @@ const Analysis = () => {
           <CardContent>
             <div className="text-2xl font-bold text-engineering-red">{Math.round(avgProgress)}%</div>
             <p className="text-xs text-muted-foreground">
-              +{Math.round((avgProgress / 100) * 100)}% from last month
+              Across all projects
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Project Status Distribution */}
-        <Card className="engineering-card">
-          <CardHeader>
-            <CardTitle>Project Status Distribution</CardTitle>
-            <CardDescription>Breakdown of projects by status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer className="h-[300px]">
-              <PieChart>
-                <Pie
-                  data={projectStatusData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}`}
-                >
-                  {projectStatusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Weekly Hours */}
-        <Card className="engineering-card">
-          <CardHeader>
-            <CardTitle>Weekly Hours</CardTitle>
-            <CardDescription>Hours logged this week</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer className="h-[300px]">
-              <BarChart data={weeklyHoursData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="hours" fill="hsl(var(--engineering-red))" />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Project Progress */}
-        <Card className="engineering-card">
-          <CardHeader>
-            <CardTitle>Project Progress</CardTitle>
-            <CardDescription>Top 5 projects by progress</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer className="h-[300px]">
-              <BarChart data={projectProgressData} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 100]} />
-                <YAxis dataKey="name" type="category" width={100} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="progress" fill="hsl(var(--engineering-red))" />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Monthly Trends */}
-        <Card className="engineering-card">
-          <CardHeader>
-            <CardTitle>Monthly Trends</CardTitle>
-            <CardDescription>Projects and hours over time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer className="h-[300px]">
-              <LineChart data={monthlyTrendData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="projects"
-                  stroke="hsl(var(--engineering-red))"
-                  strokeWidth={2}
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="hours"
-                  stroke="hsl(var(--status-info))"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activity */}
+      {/* Simple Chart */}
       <Card className="engineering-card">
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Latest project updates and time entries</CardDescription>
+          <CardTitle>Project Status Distribution</CardTitle>
+          <CardDescription>Current project status breakdown</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {projects.slice(0, 5).map((project) => (
-              <div key={project.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <div className="w-3 h-3 rounded-full bg-status-active"></div>
-                  <div>
-                    <p className="font-medium">{project.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Updated {new Date(project.updated_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="outline">{project.status}</Badge>
-                  <span className="text-sm text-muted-foreground">{project.progress}%</span>
-                </div>
+          <div className="space-y-2">
+            {projectStatusData.map((status, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="text-sm font-medium">{status.name}</span>
+                <span className="text-sm text-muted-foreground">{status.value}</span>
               </div>
             ))}
           </div>
