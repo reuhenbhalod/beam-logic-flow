@@ -29,7 +29,6 @@ const Analysis = () => {
 
   const fetchData = async () => {
     try {
-      console.log('Fetching data...')
       setError(null)
       
       // Fetch projects
@@ -60,12 +59,7 @@ const Analysis = () => {
       if (usersError) {
         console.error('Users error:', usersError)
         // Don't throw error for users, just log it
-        console.log('Users data:', [])
       }
-
-      console.log('Projects data:', projectsData)
-      console.log('Time entries data:', timeData)
-      console.log('Users data:', usersData)
 
       setProjects(projectsData || [])
       setTimeEntries(timeData || [])
@@ -262,18 +256,7 @@ const Analysis = () => {
         </div>
       </div>
 
-      {/* Debug Info */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-blue-800">Debug Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-blue-700">
-            Projects: {totalProjects} | Time Entries: {timeEntries?.length || 0} | 
-            Total Hours: {totalHours} | Total Fees: ${totalFees}
-          </p>
-        </CardContent>
-      </Card>
+
 
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
