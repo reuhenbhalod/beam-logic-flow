@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/hooks/use-auth';
-import CustomCursor from './CustomCursor';
+
 import TimeLogger from './TimeLogger';
 
 const navigation = [
@@ -96,7 +96,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="h-screen flex overflow-hidden bg-background abstract-bg">
-      <CustomCursor />
+
       
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
