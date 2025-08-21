@@ -48,12 +48,11 @@ export type Database = {
           created_by: string
           created_at: string
           updated_at: string
-          client_name: string
           project_type: string
           fee: number
           start_date: string
           end_date: string
-          target_hourly_rate: number
+          budget: number
         }
         Insert: {
           id?: string
@@ -64,12 +63,11 @@ export type Database = {
           created_by: string
           created_at?: string
           updated_at?: string
-          client_name: string
           project_type: string
           fee: number
           start_date: string
           end_date?: string
-          target_hourly_rate: number
+          budget: number
         }
         Update: {
           id?: string
@@ -80,12 +78,11 @@ export type Database = {
           created_by?: string
           created_at?: string
           updated_at?: string
-          client_name?: string
           project_type?: string
           fee?: number
           start_date?: string
           end_date?: string
-          target_hourly_rate?: number
+          budget?: number
         }
       }
       time_entries: {

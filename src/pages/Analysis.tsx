@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, Clock, DollarSign, Users, Target } from 'lucide-react'
+import { TrendingUp, TrendingDown, Clock, DollarSign, Users, Target, BarChart3, PieChart as PieChartIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
@@ -18,11 +19,13 @@ const Analysis = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState('month')
+  const [selectedProject, setSelectedProject] = useState<string>('all')
+  const [users, setUsers] = useState<{ id: string; full_name: string }[]>([])
   const { user } = useAuth()
 
   useEffect(() => {
     fetchData()
-  }, [timeRange])
+  }, [timeRange, selectedProject])
 
   const fetchData = async () => {
     try {
@@ -49,11 +52,24 @@ const Analysis = () => {
         throw new Error(`Failed to fetch time entries: ${timeError.message}`)
       }
 
+      // Fetch users
+      const { data: usersData, error: usersError } = await supabase
+        .from('users')
+        .select('id, full_name')
+
+      if (usersError) {
+        console.error('Users error:', usersError)
+        // Don't throw error for users, just log it
+        console.log('Users data:', [])
+      }
+
       console.log('Projects data:', projectsData)
       console.log('Time entries data:', timeData)
+      console.log('Users data:', usersData)
 
       setProjects(projectsData || [])
       setTimeEntries(timeData || [])
+      setUsers(usersData || [])
     } catch (err) {
       console.error('Error in fetchData:', err)
       setError(err instanceof Error ? err.message : 'Unknown error occurred')
@@ -98,6 +114,64 @@ const Analysis = () => {
     { day: 'Sat', hours: 3.5 },
     { day: 'Sun', hours: 2.0 },
   ]
+
+  // Generate project hours chart data
+  const generateProjectHoursData = () => {
+    if (!timeEntries.length || !users.length) return []
+
+    const filteredEntries = selectedProject === 'all' 
+      ? timeEntries 
+      : timeEntries.filter(entry => entry.project_id === selectedProject)
+
+    const userHours: { [key: string]: { [key: string]: number } } = {}
+    
+    // Initialize user hours for each project
+    users.forEach(user => {
+      userHours[user.id] = {}
+      projects.forEach(project => {
+        userHours[user.id][project.id] = 0
+      })
+    })
+
+    // Calculate hours for each user on each project
+    filteredEntries.forEach(entry => {
+      if (userHours[entry.user_id] && userHours[entry.user_id][entry.project_id] !== undefined) {
+        userHours[entry.user_id][entry.project_id] += entry.hours || 0
+      }
+    })
+
+    // Convert to chart format
+    const chartData = users.map(user => {
+      const userData: any = { name: user.full_name }
+      projects.forEach(project => {
+        userData[project.name] = userHours[user.id][project.id] || 0
+      })
+      return userData
+    })
+
+    return chartData
+  }
+
+  // Generate task type breakdown data
+  const generateTaskTypeData = () => {
+    if (!timeEntries.length) return []
+
+    const taskBreakdown: { [key: string]: number } = {}
+    
+    timeEntries.forEach(entry => {
+      const role = entry.role || 'Unknown'
+      taskBreakdown[role] = (taskBreakdown[role] || 0) + (entry.hours || 0)
+    })
+
+    return Object.entries(taskBreakdown).map(([role, hours]) => ({
+      name: role,
+      value: hours,
+      color: `hsl(${Math.random() * 360}, 70%, 50%)`
+    }))
+  }
+
+  const projectHoursData = generateProjectHoursData()
+  const taskTypeData = generateTaskTypeData()
 
   const projectProgressData = projects?.slice(0, 5).map(project => ({
     name: project.name,
@@ -160,17 +234,32 @@ const Analysis = () => {
           <h1 className="text-3xl font-bold text-foreground">Analysis</h1>
           <p className="text-muted-foreground">Project performance and analytics</p>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">This Week</SelectItem>
-            <SelectItem value="month">This Month</SelectItem>
-            <SelectItem value="quarter">This Quarter</SelectItem>
-            <SelectItem value="year">This Year</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center space-x-4">
+          <Select value={selectedProject} onValueChange={setSelectedProject}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select Project" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Projects</SelectItem>
+              {projects.map(project => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Debug Info */}
@@ -241,7 +330,210 @@ const Analysis = () => {
         </Card>
       </div>
 
-      {/* Simple Chart */}
+      {/* Project Hours Chart */}
+      <Card className="engineering-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Project Hours by Person
+          </CardTitle>
+          <CardDescription>
+            Hours worked by each person on {selectedProject === 'all' ? 'all projects' : projects.find(p => p.id === selectedProject)?.name}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {projectHoursData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={projectHoursData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                {projects.map((project, index) => (
+                  <Bar 
+                    key={project.id} 
+                    dataKey={project.name} 
+                    fill={`hsl(${index * 60}, 70%, 50%)`}
+                    stackId="a"
+                  />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No time entries found for the selected project
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Task Type Breakdown */}
+      <Card className="engineering-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PieChartIcon className="h-5 w-5" />
+            Task Type Breakdown
+          </CardTitle>
+          <CardDescription>Hours spent on different types of tasks</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {taskTypeData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={400}>
+              <PieChart>
+                <Pie
+                  data={taskTypeData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={120}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {taskTypeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No task type data available
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Fee Spending Tracking */}
+      <Card className="engineering-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Fee Spending vs Budget
+          </CardTitle>
+          <CardDescription>Track how much of your project fees have been spent</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {projects.filter(p => p.fee > 0 || p.budget > 0).map(project => {
+              const projectHours = timeEntries
+                .filter(entry => entry.project_id === project.id)
+                .reduce((sum, entry) => sum + (entry.hours || 0), 0)
+              
+              const estimatedCost = projectHours * 100 // Assuming $100/hour average rate
+              const feeSpent = (estimatedCost / project.fee) * 100
+              const budgetSpent = (estimatedCost / project.budget) * 100
+              
+              return (
+                <div key={project.id} className="border rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-medium">{project.name}</h4>
+                    <div className="text-sm text-muted-foreground">
+                      {projectHours.toFixed(1)} hours
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Fee: ${project.fee?.toLocaleString() || '0'}</span>
+                      <span className={feeSpent > 100 ? 'text-red-600' : 'text-green-600'}>
+                        {feeSpent > 100 ? 'Over Budget' : `${feeSpent.toFixed(1)}% spent`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Budget: ${project.budget?.toLocaleString() || '0'}</span>
+                      <span className={budgetSpent > 100 ? 'text-red-600' : 'text-green-600'}>
+                        {budgetSpent > 100 ? 'Over Budget' : `${budgetSpent.toFixed(1)}% spent`}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${budgetSpent > 100 ? 'bg-red-500' : 'bg-green-500'}`}
+                        style={{ width: `${Math.min(budgetSpent, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Task Budget Tracking */}
+      <Card className="engineering-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Task Budget Tracking
+          </CardTitle>
+          <CardDescription>Track time and costs against different task types</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {(() => {
+              const taskBreakdown: { [key: string]: { hours: number; cost: number; budget: number } } = {}
+              
+              // Calculate hours and costs for each task type
+              timeEntries.forEach(entry => {
+                const role = entry.role || 'Unknown'
+                if (!taskBreakdown[role]) {
+                  taskBreakdown[role] = { hours: 0, cost: 0, budget: 0 }
+                }
+                taskBreakdown[role].hours += entry.hours || 0
+                taskBreakdown[role].cost += (entry.hours || 0) * 100 // $100/hour rate
+              })
+              
+              // Set sample budgets for different task types
+              const sampleBudgets: { [key: string]: number } = {
+                'Engineering': 5000,
+                'Drafting': 3000,
+                'Project Management': 4000,
+                'Consulting': 6000,
+                'Unknown': 2000
+              }
+              
+              return Object.entries(taskBreakdown).map(([role, data]) => {
+                const budget = sampleBudgets[role] || 2000
+                const budgetSpent = (data.cost / budget) * 100
+                
+                return (
+                  <div key={role} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-medium">{role}</h4>
+                      <div className="text-sm text-muted-foreground">
+                        {data.hours.toFixed(1)} hours
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Cost: ${data.cost.toLocaleString()}</span>
+                        <span>Budget: ${budget.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Budget Status:</span>
+                        <span className={budgetSpent > 100 ? 'text-red-600' : 'text-green-600'}>
+                          {budgetSpent > 100 ? 'Over Budget' : `${budgetSpent.toFixed(1)}% spent`}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${budgetSpent > 100 ? 'bg-red-500' : 'bg-green-500'}`}
+                          style={{ width: `${Math.min(budgetSpent, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            })()}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Project Status Distribution */}
       <Card className="engineering-card">
         <CardHeader>
           <CardTitle>Project Status Distribution</CardTitle>

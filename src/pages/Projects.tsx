@@ -10,11 +10,89 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 
 type Project = Database['public']['Tables']['projects']['Row']
+
+// ProjectCard component
+const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: { 
+  project: Project, 
+  onEdit: (project: Project) => void, 
+  onDelete: (id: string) => void,
+  hasTimeEntries: boolean 
+}) => {
+  return (
+    <Card className="engineering-card hover:shadow-elevated transition-shadow">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <CardTitle className="text-lg">{project.name}</CardTitle>
+            <CardDescription className="mt-2 line-clamp-2">
+              {project.description}
+            </CardDescription>
+          </div>
+          <div className="flex space-x-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(project)}
+              data-interactive
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(project.id)}
+              data-interactive
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Badge className={getStatusColor(project.status)}>
+              {getStatusText(project.status)}
+            </Badge>
+            {hasTimeEntries && (
+              <div className="flex items-center text-amber-600" title="This project has time entries logged">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+            )}
+          </div>
+          <span className="text-sm text-muted-foreground">
+            {project.progress}% Complete
+          </span>
+        </div>
+        <Progress value={project.progress} className="h-2" />
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-1" />
+            {new Date(project.start_date || project.created_at).toLocaleDateString()}
+          </div>
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-1" />
+            {project.project_type || 'No Type'}
+          </div>
+        </div>
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center font-medium text-engineering-red">
+            Fee: ${project.fee?.toLocaleString() || '0'}
+          </div>
+          <div className="flex items-center font-medium text-blue-600">
+            Budget: ${project.budget?.toLocaleString() || '0'}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([])
@@ -29,12 +107,11 @@ const Projects = () => {
     description: '',
     status: 'planning',
     progress: 0,
-    client_name: '',
     project_type: '',
     fee: 0,
     start_date: '',
     end_date: '',
-    target_hourly_rate: 0
+    budget: 0
   })
 
   const { user } = useAuth()
@@ -157,12 +234,11 @@ const Projects = () => {
       description: project.description,
       status: project.status,
       progress: project.progress,
-      client_name: project.client_name || '',
       project_type: project.project_type || '',
       fee: project.fee || 0,
       start_date: project.start_date || '',
       end_date: project.end_date || '',
-      target_hourly_rate: project.target_hourly_rate || 0
+      budget: project.budget || 0
     })
     setIsEditDialogOpen(true)
   }
@@ -266,32 +342,20 @@ const Projects = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="client_name">Client Name</Label>
-                  <Input
-                    id="client_name"
-                    value={formData.client_name}
-                    onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
-                    placeholder="Enter client name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="project_type">Project Type</Label>
-                  <Select value={formData.project_type} onValueChange={(value) => setFormData({ ...formData, project_type: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="engineering">Engineering</SelectItem>
-                      <SelectItem value="drafting">Drafting</SelectItem>
-                      <SelectItem value="pm">Project Management</SelectItem>
-                      <SelectItem value="consulting">Consulting</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="project_type">Project Type</Label>
+                <Select value={formData.project_type} onValueChange={(value) => setFormData({ ...formData, project_type: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="engineering">Engineering</SelectItem>
+                    <SelectItem value="drafting">Drafting</SelectItem>
+                    <SelectItem value="pm">Project Management</SelectItem>
+                    <SelectItem value="consulting">Consulting</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -308,14 +372,14 @@ const Projects = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="target_hourly_rate">Target Hourly Rate ($)</Label>
+                  <Label htmlFor="budget">Project Budget ($)</Label>
                   <Input
-                    id="target_hourly_rate"
+                    id="budget"
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.target_hourly_rate}
-                    onChange={(e) => setFormData({ ...formData, target_hourly_rate: Number(e.target.value) })}
+                    value={formData.budget}
+                    onChange={(e) => setFormData({ ...formData, budget: Number(e.target.value) })}
                     placeholder="0.00"
                     required
                   />
@@ -362,78 +426,47 @@ const Projects = () => {
         </Alert>
       )}
 
-      {/* Projects Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <Card key={project.id} className="engineering-card hover:shadow-elevated transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{project.name}</CardTitle>
-                  <CardDescription className="mt-2 line-clamp-2">
-                    {project.description}
-                  </CardDescription>
-                </div>
-                <div className="flex space-x-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openEditDialog(project)}
-                    data-interactive
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteProject(project.id)}
-                    data-interactive
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Badge className={getStatusColor(project.status)}>
-                    {getStatusText(project.status)}
-                  </Badge>
-                  {projectsWithTimeEntries.has(project.id) && (
-                    <div className="flex items-center text-amber-600" title="This project has time entries logged">
-                      <AlertTriangle className="h-4 w-4" />
-                    </div>
-                  )}
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  {project.progress}% Complete
-                </span>
-              </div>
-              <Progress value={project.progress} className="h-2" />
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  {new Date(project.start_date || project.created_at).toLocaleDateString()}
-                </div>
-                <div className="flex items-center">
-                  <User className="h-4 w-4 mr-1" />
-                  {project.client_name || 'No Client'}
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1" />
-                  {project.project_type || 'No Type'}
-                </div>
-                <div className="flex items-center font-medium text-engineering-red">
-                  ${project.fee?.toLocaleString() || '0'}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Projects Tabs */}
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="all">All Projects</TabsTrigger>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="planning">Planning</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} onEdit={openEditDialog} onDelete={handleDeleteProject} hasTimeEntries={projectsWithTimeEntries.has(project.id)} />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="active" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.filter(p => p.status === 'active').map((project) => (
+              <ProjectCard key={project.id} project={project} onEdit={openEditDialog} onDelete={handleDeleteProject} hasTimeEntries={projectsWithTimeEntries.has(project.id)} />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="completed" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.filter(p => p.status === 'completed').map((project) => (
+              <ProjectCard key={project.id} project={project} onEdit={openEditDialog} onDelete={handleDeleteProject} hasTimeEntries={projectsWithTimeEntries.has(project.id)} />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="planning" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.filter(p => p.status === 'planning').map((project) => (
+              <ProjectCard key={project.id} project={project} onEdit={openEditDialog} onDelete={handleDeleteProject} hasTimeEntries={projectsWithTimeEntries.has(project.id)} />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -491,32 +524,20 @@ const Projects = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-client_name">Client Name</Label>
-                  <Input
-                    id="edit-client_name"
-                    value={formData.client_name}
-                    onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
-                    placeholder="Enter client name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-project_type">Project Type</Label>
-                  <Select value={formData.project_type} onValueChange={(value) => setFormData({ ...formData, project_type: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="engineering">Engineering</SelectItem>
-                      <SelectItem value="drafting">Drafting</SelectItem>
-                      <SelectItem value="pm">Project Management</SelectItem>
-                      <SelectItem value="consulting">Consulting</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-project_type">Project Type</Label>
+                <Select value={formData.project_type} onValueChange={(value) => setFormData({ ...formData, project_type: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="engineering">Engineering</SelectItem>
+                    <SelectItem value="drafting">Drafting</SelectItem>
+                    <SelectItem value="pm">Project Management</SelectItem>
+                    <SelectItem value="consulting">Consulting</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -533,14 +554,14 @@ const Projects = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-target_hourly_rate">Target Hourly Rate ($)</Label>
+                  <Label htmlFor="edit-budget">Project Budget ($)</Label>
                   <Input
-                    id="edit-target_hourly_rate"
+                    id="edit-budget"
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.target_hourly_rate}
-                    onChange={(e) => setFormData({ ...formData, target_hourly_rate: Number(e.target.value) })}
+                    value={formData.budget}
+                    onChange={(e) => setFormData({ ...formData, budget: Number(e.target.value) })}
                     placeholder="0.00"
                     required
                   />
