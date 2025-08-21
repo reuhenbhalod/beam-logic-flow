@@ -17,6 +17,26 @@ import type { Database } from '@/lib/supabase'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
+// Helper functions
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'active': return 'bg-status-active'
+    case 'completed': return 'bg-status-info'
+    case 'on-hold': return 'bg-status-warning'
+    default: return 'bg-status-warning'
+  }
+}
+
+const getStatusText = (status: string) => {
+  switch (status) {
+    case 'active': return 'Active'
+    case 'completed': return 'Completed'
+    case 'on-hold': return 'On Hold'
+    case 'planning': return 'Planning'
+    default: return status
+  }
+}
+
 // ProjectCard component
 const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: { 
   project: Project, 
@@ -243,24 +263,7 @@ const Projects = () => {
     setIsEditDialogOpen(true)
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-status-active'
-      case 'completed': return 'bg-status-info'
-      case 'on-hold': return 'bg-status-warning'
-      default: return 'bg-status-warning'
-    }
-  }
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'Active'
-      case 'completed': return 'Completed'
-      case 'on-hold': return 'On Hold'
-      case 'planning': return 'Planning'
-      default: return status
-    }
-  }
 
   if (loading) {
     return (
