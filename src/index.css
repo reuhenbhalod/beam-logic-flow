@@ -17,7 +17,7 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
     --popover: 255 255 255;
     --popover-foreground: 51 65 85;
 
-    --primary: 225 29 76;
+    --primary: 153 27 27;
     --primary-foreground: 255 255 255;
 
     --secondary: 248 250 252;
@@ -34,12 +34,12 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
 
     --border: 226 232 240;
     --input: 226 232 240;
-    --ring: 225 29 76;
+    --ring: 153 27 27;
 
-    /* Engineering specific colors - vivid red */
-    --engineering-red: 225 29 76;
-    --engineering-red-light: 239 68 68;
-    --engineering-red-dark: 190 18 60;
+    /* Engineering specific colors - dark red */
+    --engineering-red: 153 27 27;
+    --engineering-red-light: 185 28 28;
+    --engineering-red-dark: 127 29 29;
     --engineering-gray: 100 116 139;
     --engineering-gray-light: 148 163 184;
     
@@ -63,12 +63,12 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
 
     --sidebar-background: 255 255 255;
     --sidebar-foreground: 51 65 85;
-    --sidebar-primary: 225 29 76;
+    --sidebar-primary: 153 27 27;
     --sidebar-primary-foreground: 255 255 255;
     --sidebar-accent: 248 250 252;
     --sidebar-accent-foreground: 51 65 85;
     --sidebar-border: 226 232 240;
-    --sidebar-ring: 225 29 76;
+    --sidebar-ring: 153 27 27;
   }
 
 

@@ -255,16 +255,16 @@ const Analysis = () => {
           </div>
           <div className="flex items-center space-x-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-600">Project Filter</label>
+              <label className="text-sm font-medium text-slate-600">Find Project</label>
               <Select value={selectedProject} onValueChange={setSelectedProject}>
-                <SelectTrigger className="w-56 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
-                  <SelectValue placeholder="Select Project to Analyze" />
+                <SelectTrigger className="w-64 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
+                  <SelectValue placeholder="Search and select a project..." />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
-                      All Projects
+                      <span className="font-medium">All Projects Overview</span>
                     </div>
                   </SelectItem>
                   {projects.map(project => (
@@ -276,7 +276,7 @@ const Analysis = () => {
                           project.status === 'on-hold' ? 'bg-yellow-500' :
                           'bg-slate-400'
                         }`}></div>
-                        {project.name}
+                        <span className="font-medium">{project.name}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -382,7 +382,7 @@ const Analysis = () => {
       <Card className="engineering-card hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-700 to-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <BarChart3 className="h-7 w-7 text-white" />
             </div>
             <div>
@@ -397,10 +397,27 @@ const Analysis = () => {
           {projectHoursData.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={projectHoursData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="#64748b"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  label={{ value: 'Team Members', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#64748b', fontSize: 14, fontWeight: 600 } }}
+                />
+                <YAxis 
+                  stroke="#64748b"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `${value}h`}
+                  label={{ value: 'Hours Worked', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#64748b', fontSize: 14, fontWeight: 600 } }}
+                />
+                <Tooltip 
+                  content={<ChartTooltip />}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                />
                 <Legend />
                 {projects.map((project, index) => (
                   <Bar 
@@ -408,6 +425,8 @@ const Analysis = () => {
                     dataKey={project.name} 
                     fill={`hsl(${index * 60}, 70%, 50%)`}
                     stackId="a"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={60}
                   />
                 ))}
               </BarChart>
@@ -421,13 +440,19 @@ const Analysis = () => {
       </Card>
 
       {/* Task Type Breakdown */}
-      <Card className="engineering-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <PieChartIcon className="h-5 w-5" />
-            Task Type Breakdown
+      <Card className="engineering-card hover:shadow-xl transition-all duration-300">
+        <CardHeader className="pb-6">
+          <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <PieChartIcon className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <div>Task Type Breakdown</div>
+              <div className="text-base font-normal text-slate-500 mt-1">
+                Distribution of hours across different task categories
+              </div>
+            </div>
           </CardTitle>
-          <CardDescription>Hours spent on different types of tasks</CardDescription>
         </CardHeader>
         <CardContent>
           {taskTypeData.length > 0 ? (
@@ -447,8 +472,15 @@ const Analysis = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend />
+                <Tooltip 
+                  content={<ChartTooltip />}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  wrapperStyle={{ fontSize: '12px', color: '#64748b' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           ) : (
@@ -460,13 +492,19 @@ const Analysis = () => {
       </Card>
 
       {/* Fee Spending Tracking */}
-      <Card className="engineering-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Fee Spending vs Budget
+      <Card className="engineering-card hover:shadow-xl transition-all duration-300">
+        <CardHeader className="pb-6">
+          <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <DollarSign className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <div>Fee Spending vs Budget</div>
+              <div className="text-base font-normal text-slate-500 mt-1">
+                Track how much of your project fees have been spent
+              </div>
+            </div>
           </CardTitle>
-          <CardDescription>Track how much of your project fees have been spent</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -515,13 +553,19 @@ const Analysis = () => {
       </Card>
 
       {/* Task Budget Tracking */}
-      <Card className="engineering-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Task Budget Tracking
+      <Card className="engineering-card hover:shadow-xl transition-all duration-300">
+        <CardHeader className="pb-6">
+          <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Target className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <div>Task Budget Tracking</div>
+              <div className="text-base font-normal text-slate-500 mt-1">
+                Track time and costs against different task types
+              </div>
+            </div>
           </CardTitle>
-          <CardDescription>Track time and costs against different task types</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -586,10 +630,19 @@ const Analysis = () => {
       </Card>
 
       {/* Project Status Distribution */}
-      <Card className="engineering-card">
-        <CardHeader>
-          <CardTitle>Project Status Distribution</CardTitle>
-          <CardDescription>Current project status breakdown</CardDescription>
+      <Card className="engineering-card hover:shadow-xl transition-all duration-300">
+        <CardHeader className="pb-6">
+          <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <BarChart3 className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <div>Project Status Distribution</div>
+              <div className="text-base font-normal text-slate-500 mt-1">
+                Current project status breakdown
+              </div>
+            </div>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">

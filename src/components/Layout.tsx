@@ -41,13 +41,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           className="flex items-center gap-3 group transition-all duration-200 cursor-pointer"
           onClick={() => mobile && setSidebarOpen(false)}
         >
-          {/* I.L. Gross Logo */}
-          <div className="relative">
-            <div className="w-10 h-10 bg-red-700 transform rotate-45 shadow-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm -rotate-45">ILG</span>
-            </div>
-            <div className="absolute inset-0 border-2 border-white rounded-sm transform rotate-45"></div>
-          </div>
+                         {/* I.L. Gross Logo */}
+               <div className="relative">
+                 <div className="w-10 h-10 bg-red-800 transform rotate-45 shadow-xl flex items-center justify-center">
+                   <span className="text-white font-bold text-sm -rotate-45">ILG</span>
+                 </div>
+                 <div className="absolute inset-0 border-2 border-white rounded-sm transform rotate-45"></div>
+               </div>
           
           {/* Company Name */}
           <div className="flex flex-col">

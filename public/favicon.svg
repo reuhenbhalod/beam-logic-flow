@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Dark red diamond background -->
-  <polygon points="32,8 48,32 32,56 16,32" fill="#991B1B" stroke="#FEF2F2" stroke-width="1"/>
+         <!-- Dark red diamond background -->
+       <polygon points="32,8 48,32 32,56 16,32" fill="#7F1D1D" stroke="#FEF2F2" stroke-width="2"/>
   
   <!-- White ILG text -->
   <text x="32" y="38" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">ILG</text>

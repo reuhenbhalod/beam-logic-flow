@@ -89,7 +89,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             )}
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold text-red-600">{project.progress}%</div>
+                               <div className="text-2xl font-bold text-red-800">{project.progress}%</div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">Complete</div>
           </div>
         </div>
@@ -103,7 +103,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             <div className="relative">
               <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-red-700 to-red-800 rounded-full transition-all duration-500"
                   style={{ width: `${project.progress}%` }}
                 ></div>
               </div>
@@ -113,11 +113,11 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
         
         <div className="grid grid-cols-2 gap-4 text-sm mb-6">
           <div className="flex items-center space-x-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-            <Calendar className="h-5 w-5 text-red-600" />
+            <Calendar className="h-5 w-5 text-red-800" />
             <span className="font-medium">{new Date(project.start_date || project.created_at).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center space-x-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-            <Clock className="h-5 w-5 text-red-600" />
+            <Clock className="h-5 w-5 text-red-800" />
             <span className="font-medium">{project.project_type || 'No Type'}</span>
           </div>
         </div>
@@ -125,7 +125,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border border-red-200 shadow-sm">
             <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Project Fee</div>
-            <div className="font-bold text-red-700 text-xl">${project.fee?.toLocaleString() || '0'}</div>
+            <div className="font-bold text-red-800 text-xl">${project.fee?.toLocaleString() || '0'}</div>
           </div>
           <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200 shadow-sm">
             <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Budget</div>
@@ -321,15 +321,15 @@ const Projects = () => {
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-8 py-4 text-base font-bold rounded-2xl">
+              <Button className="bg-red-800 hover:bg-red-900 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-8 py-4 text-base font-bold rounded-2xl">
                 <Plus className="h-6 w-6 mr-3" />
                 New Project
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Project</DialogTitle>
-                <DialogDescription>
+            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+              <DialogHeader className="pb-4">
+                <DialogTitle className="text-xl font-bold text-slate-800">Create New Project</DialogTitle>
+                <DialogDescription className="text-slate-600">
                   Add a new project to your portfolio
                 </DialogDescription>
               </DialogHeader>
@@ -509,10 +509,10 @@ const Projects = () => {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Project</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+          <DialogHeader className="pb-4">
+            <DialogTitle className="text-xl font-bold text-slate-800">Edit Project</DialogTitle>
+            <DialogDescription className="text-slate-600">
               Update project details
             </DialogDescription>
           </DialogHeader>

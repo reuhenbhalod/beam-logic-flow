@@ -202,10 +202,10 @@ const People = () => {
                 Add Person
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Add New Team Member</DialogTitle>
-                <DialogDescription>
+            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+              <DialogHeader className="pb-4">
+                <DialogTitle className="text-xl font-bold text-slate-800">Add New Team Member</DialogTitle>
+                <DialogDescription className="text-slate-600">
                   Add a new person to your team
                 </DialogDescription>
               </DialogHeader>
@@ -396,10 +396,10 @@ const People = () => {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Team Member</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+          <DialogHeader className="pb-4">
+            <DialogTitle className="text-xl font-bold text-slate-800">Edit Team Member</DialogTitle>
+            <DialogDescription className="text-slate-600">
               Update team member details
             </DialogDescription>
           </DialogHeader>
