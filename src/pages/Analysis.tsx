@@ -223,14 +223,17 @@ const Analysis = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Analysis</h1>
-          <p className="text-muted-foreground">Project performance and analytics</p>
+      <div className="flex justify-between items-center bg-gradient-to-r from-card via-card/95 to-card/90 p-6 rounded-2xl border border-border/20 shadow-lg">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-primary rounded-full"></div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent">Analysis</h1>
+          </div>
+          <p className="text-muted-foreground/80 text-lg">Project performance and analytics</p>
         </div>
         <div className="flex items-center space-x-4">
           <Select value={selectedProject} onValueChange={setSelectedProject}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-48 bg-background/80 border-border/30 hover:border-border/50 transition-colors">
               <SelectValue placeholder="Select Project" />
             </SelectTrigger>
             <SelectContent>
@@ -243,7 +246,7 @@ const Analysis = () => {
             </SelectContent>
           </Select>
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 bg-background/80 border-border/30 hover:border-border/50 transition-colors">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -260,53 +263,53 @@ const Analysis = () => {
 
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="engineering-card">
+        <Card className="engineering-card bg-gradient-to-br from-card via-card/95 to-card/90 border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground/80">Total Projects</CardTitle>
+            <Target className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalProjects}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{totalProjects}</div>
+            <p className="text-xs text-muted-foreground/60 mt-1">
               {activeProjects} active
             </p>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
+        <Card className="engineering-card bg-gradient-to-br from-card via-card/95 to-card/90 border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-            <TrendingUp className="h-4 w-4 text-status-active" />
+            <CardTitle className="text-sm font-medium text-muted-foreground/80">Active Projects</CardTitle>
+            <TrendingUp className="h-5 w-5 text-status-active" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-status-active">{activeProjects}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-status-active">{activeProjects}</div>
+            <p className="text-xs text-muted-foreground/60 mt-1">
               {totalProjects > 0 ? Math.round((activeProjects / totalProjects) * 100) : 0}% of total
             </p>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
+        <Card className="engineering-card bg-gradient-to-br from-card via-card/95 to-card/90 border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground/80">Total Hours</CardTitle>
+            <Clock className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalHours.toFixed(1)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{totalHours.toFixed(1)}</div>
+            <p className="text-xs text-muted-foreground/60 mt-1">
               Hours logged
             </p>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
+        <Card className="engineering-card bg-gradient-to-br from-card via-card/95 to-card/90 border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-engineering-red" />
+            <CardTitle className="text-sm font-medium text-muted-foreground/80">Avg Progress</CardTitle>
+            <TrendingUp className="h-5 w-5 text-engineering-red" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-engineering-red">{Math.round(avgProgress)}%</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold text-engineering-red">{Math.round(avgProgress)}%</div>
+            <p className="text-xs text-muted-foreground/60 mt-1">
               Across all projects
             </p>
           </CardContent>
@@ -314,13 +317,15 @@ const Analysis = () => {
       </div>
 
       {/* Project Hours Chart */}
-      <Card className="engineering-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
+      <Card className="engineering-card bg-gradient-to-br from-card via-card/95 to-card/90 border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardHeader className="pb-6">
+          <CardTitle className="flex items-center gap-3 text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <BarChart3 className="h-6 w-6 text-primary" />
+            </div>
             Project Hours by Person
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground/80 text-base mt-2">
             Hours worked by each person on {selectedProject === 'all' ? 'all projects' : projects.find(p => p.id === selectedProject)?.name}
           </CardDescription>
         </CardHeader>

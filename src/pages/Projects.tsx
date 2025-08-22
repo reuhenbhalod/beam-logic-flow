@@ -45,19 +45,20 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
   hasTimeEntries: boolean 
 }) => {
   return (
-    <Card className="engineering-card hover:shadow-elevated transition-shadow">
-      <CardHeader>
+    <Card className="engineering-card hover:shadow-2xl hover:shadow-engineering-red/10 transition-all duration-300 transform hover:scale-[1.02] border border-border/20 bg-gradient-to-br from-card via-card/95 to-card/90">
+      <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <CardTitle className="text-lg">{project.name}</CardTitle>
-            <CardDescription className="mt-2 line-clamp-2">
+            <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{project.name}</CardTitle>
+            <CardDescription className="mt-3 line-clamp-2 text-muted-foreground/80 text-base leading-relaxed">
               {project.description}
             </CardDescription>
           </div>
-          <div className="flex space-x-1">
+          <div className="flex space-x-2">
             <Button
               variant="ghost"
               size="sm"
+              className="hover:bg-primary/10 hover:text-primary transition-all duration-200 rounded-lg"
               onClick={() => onEdit(project)}
               data-interactive
             >
@@ -66,6 +67,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             <Button
               variant="ghost"
               size="sm"
+              className="hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 rounded-lg"
               onClick={() => onDelete(project.id)}
               data-interactive
             >
@@ -74,39 +76,50 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Badge className={getStatusColor(project.status)}>
+          <div className="flex items-center space-x-3">
+            <Badge className={`${getStatusColor(project.status)} px-3 py-1 rounded-full font-medium shadow-sm`}>
               {getStatusText(project.status)}
             </Badge>
             {hasTimeEntries && (
-              <div className="flex items-center text-amber-600" title="This project has time entries logged">
+              <div className="flex items-center text-amber-600 bg-amber-50 p-2 rounded-full" title="This project has time entries logged">
                 <AlertTriangle className="h-4 w-4" />
               </div>
             )}
           </div>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
             {project.progress}% Complete
           </span>
         </div>
-        <Progress value={project.progress} className="h-2" />
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1" />
-            {new Date(project.start_date || project.created_at).toLocaleDateString()}
+        
+        <div className="space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground/60">Progress</span>
+            <span className="font-medium">{project.progress}%</span>
           </div>
-          <div className="flex items-center">
-            <Clock className="h-4 w-4 mr-1" />
-            {project.project_type || 'No Type'}
+          <Progress value={project.progress} className="h-3 bg-muted/30" />
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="flex items-center space-x-2 text-muted-foreground/80">
+            <Calendar className="h-4 w-4 text-primary" />
+            <span>{new Date(project.start_date || project.created_at).toLocaleDateString()}</span>
+          </div>
+          <div className="flex items-center space-x-2 text-muted-foreground/80">
+            <Clock className="h-4 w-4 text-primary" />
+            <span>{project.project_type || 'No Type'}</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center font-medium text-engineering-red">
-            Fee: ${project.fee?.toLocaleString() || '0'}
+        
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/20">
+          <div className="text-center p-3 bg-gradient-to-r from-engineering-red/10 to-engineering-red/5 rounded-xl border border-engineering-red/20">
+            <div className="text-xs text-muted-foreground/60 mb-1">Project Fee</div>
+            <div className="font-bold text-engineering-red text-lg">${project.fee?.toLocaleString() || '0'}</div>
           </div>
-          <div className="flex items-center font-medium text-blue-600">
-            Budget: ${project.budget?.toLocaleString() || '0'}
+          <div className="text-center p-3 bg-gradient-to-r from-blue-500/10 to-blue-500/5 rounded-xl border border-blue-500/20">
+            <div className="text-xs text-muted-foreground/60 mb-1">Budget</div>
+            <div className="font-bold text-blue-600 text-lg">${project.budget?.toLocaleString() || '0'}</div>
           </div>
         </div>
       </CardContent>
@@ -279,15 +292,18 @@ const Projects = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Projects</h1>
-          <p className="text-muted-foreground">Manage your engineering projects</p>
+      <div className="flex justify-between items-center bg-gradient-to-r from-card via-card/95 to-card/90 p-6 rounded-2xl border border-border/20 shadow-lg">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-primary rounded-full"></div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent">Projects</h1>
+          </div>
+          <p className="text-muted-foreground/80 text-lg">Manage your engineering projects</p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-engineering-red hover:bg-engineering-red-dark">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button className="bg-gradient-to-r from-engineering-red to-engineering-red/80 hover:from-engineering-red/90 hover:to-engineering-red shadow-lg shadow-engineering-red/25 hover:shadow-xl hover:shadow-engineering-red/30 transition-all duration-300 transform hover:scale-105 px-6 py-3 text-base font-semibold">
+              <Plus className="h-5 w-5 mr-2" />
               New Project
             </Button>
           </DialogTrigger>
@@ -431,11 +447,11 @@ const Projects = () => {
 
       {/* Projects Tabs */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All Projects</TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="planning">Planning</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-muted/30 via-muted/20 to-muted/30 p-1 rounded-2xl border border-border/20 shadow-lg">
+          <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">All Projects</TabsTrigger>
+          <TabsTrigger value="active" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">Active</TabsTrigger>
+          <TabsTrigger value="completed" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">Completed</TabsTrigger>
+          <TabsTrigger value="planning" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">Planning</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-6">

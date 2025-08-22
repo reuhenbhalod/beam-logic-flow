@@ -33,16 +33,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const Sidebar = ({ mobile = false }) => (
     <div className={`flex h-full flex-col ${mobile ? 'w-full' : 'w-64'}`}>
-      <div className="flex h-16 shrink-0 items-center border-b border-border px-6 bg-gradient-primary">
+      <div className="flex h-16 shrink-0 items-center border-b border-border/20 px-6 bg-gradient-to-r from-primary via-primary/95 to-primary/90 shadow-sm">
         <Link 
           to="/" 
-          className="text-xl font-bold text-primary-foreground hover:text-primary-foreground/80 transition-colors cursor-pointer"
+          className="text-xl font-bold text-primary-foreground hover:text-primary-foreground/90 transition-all duration-200 cursor-pointer flex items-center gap-2 group"
           onClick={() => mobile && setSidebarOpen(false)}
         >
+          <div className="w-2 h-2 bg-primary-foreground/80 rounded-full group-hover:bg-primary-foreground transition-colors"></div>
           StructureFlow
         </Link>
       </div>
-      <nav className="flex-1 space-y-1 bg-card p-4">
+      <nav className="flex-1 space-y-2 bg-gradient-to-b from-card/50 to-card/30 p-6">
         {navigation.map((item) => {
           const isActive = location.pathname === item.href;
           return (
@@ -50,39 +51,43 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               key={item.name}
               to={item.href}
               className={`
-                group flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+                group flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden
                 ${isActive
-                  ? 'bg-primary text-primary-foreground shadow-glow'
-                  : 'text-muted-foreground hover:bg-engineering-red/10 hover:text-engineering-red'
+                  ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 transform scale-105'
+                  : 'text-muted-foreground hover:bg-gradient-to-r hover:from-muted/50 hover:to-muted/30 hover:text-foreground hover:shadow-md'
                 }
               `}
               onClick={() => mobile && setSidebarOpen(false)}
               data-interactive
             >
+              {isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-foreground/20 rounded-r-full"></div>
+              )}
               <item.icon 
-                className={`mr-3 h-5 w-5 ${isActive ? 'text-primary-foreground' : 'text-current'}`} 
+                className={`mr-3 h-5 w-5 transition-transform duration-200 ${isActive ? 'text-primary-foreground transform scale-110' : 'text-current group-hover:scale-110'}`} 
               />
               {item.name}
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-border p-4">
-        <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 rounded-full bg-engineering-red flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
+      <div className="border-t border-border/20 p-6 bg-gradient-to-t from-card/50 to-transparent">
+        <div className="flex items-center space-x-4">
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-engineering-red to-engineering-red/80 flex items-center justify-center shadow-lg shadow-engineering-red/25">
+            <User className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">
+            <p className="text-sm font-semibold text-foreground truncate">
               {user?.user_metadata?.full_name || user?.email || 'User'}
             </p>
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-xs text-muted-foreground/80 truncate">
               {user?.user_metadata?.role || 'Engineer'}
             </p>
           </div>
           <Button
             variant="ghost"
             size="sm"
+            className="hover:bg-muted/50 hover:text-foreground transition-all duration-200 rounded-lg"
             onClick={async () => {
               await signOut();
               navigate('/signin');
@@ -117,22 +122,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       {/* Main content */}
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
         {/* Top bar */}
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-card border-b border-border shadow-sm">
+        <div className="relative z-10 flex-shrink-0 flex h-16 bg-gradient-to-r from-card via-card/95 to-card/90 border-b border-border/20 shadow-lg backdrop-blur-sm">
           <Button
             variant="ghost"
             size="sm"
-            className="px-4 border-r border-border md:hidden"
+            className="px-4 border-r border-border/20 md:hidden hover:bg-muted/50 transition-all duration-200"
             onClick={() => setSidebarOpen(true)}
             data-interactive
           >
             <Menu className="h-5 w-5" />
           </Button>
           
-          <div className="flex-1 px-4 flex justify-between items-center">
-            <div className="flex-1 flex">
-              <h2 className="text-lg font-semibold text-foreground">
-                {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
-              </h2>
+          <div className="flex-1 px-6 flex justify-between items-center">
+            <div className="flex-1 flex items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-primary/60 rounded-full"></div>
+                <h2 className="text-xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                  {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
+                </h2>
+              </div>
             </div>
             <div className="ml-4 flex items-center md:ml-6 space-x-4">
               <TimeLogger />
