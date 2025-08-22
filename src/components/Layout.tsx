@@ -33,17 +33,28 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const Sidebar = ({ mobile = false }) => (
     <div className={`flex h-full flex-col ${mobile ? 'w-full' : 'w-64'}`}>
-      <div className="flex h-16 shrink-0 items-center border-b border-slate-200 px-6 bg-white shadow-sm">
+      <div className="flex h-20 shrink-0 items-center border-b border-slate-200 px-6 bg-gradient-to-r from-slate-50 to-white">
         <Link 
           to="/" 
-          className="text-xl font-bold text-slate-700 hover:text-red-600 transition-all duration-200 cursor-pointer flex items-center gap-2 group"
+          className="flex items-center gap-3 group transition-all duration-200 cursor-pointer"
           onClick={() => mobile && setSidebarOpen(false)}
         >
-          <div className="w-2 h-2 bg-red-600 rounded-full group-hover:bg-red-500 transition-colors"></div>
-          StructureFlow
+          {/* I.L. Gross Logo */}
+          <div className="relative">
+            <div className="w-10 h-10 bg-red-700 transform rotate-45 shadow-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm -rotate-45">ILG</span>
+            </div>
+            <div className="absolute inset-0 border-2 border-white rounded-sm transform rotate-45"></div>
+          </div>
+          
+          {/* Company Name */}
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-slate-800 group-hover:text-red-700 transition-colors">I.L. Gross</span>
+            <span className="text-xs text-slate-500 font-medium">Engineering</span>
+          </div>
         </Link>
       </div>
-      <nav className="flex-1 space-y-2 bg-white p-6">
+      <nav className="flex-1 space-y-1 bg-gradient-to-b from-slate-50 to-white p-4">
         {navigation.map((item) => {
           const isActive = location.pathname === item.href;
           return (
@@ -51,30 +62,31 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               key={item.name}
               to={item.href}
               className={`
-                group flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 relative overflow-hidden
+                group flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 relative
                 ${isActive
-                  ? 'bg-red-600 text-white shadow-sm transform scale-105'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-white text-red-700 shadow-md border border-red-200'
+                  : 'text-slate-600 hover:bg-white hover:text-slate-800 hover:shadow-sm'
                 }
               `}
               onClick={() => mobile && setSidebarOpen(false)}
               data-interactive
             >
-              {isActive && (
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-400 rounded-r-full"></div>
-              )}
+              <div className={`
+                w-2 h-2 rounded-full mr-3 transition-all duration-200
+                ${isActive ? 'bg-red-600' : 'bg-slate-300 group-hover:bg-red-400'}
+              `}></div>
               <item.icon 
-                className={`mr-3 h-5 w-5 transition-transform duration-200 ${isActive ? 'text-white transform scale-110' : 'text-current group-hover:scale-110'}`} 
+                className={`h-5 w-5 transition-all duration-200 ${isActive ? 'text-red-600' : 'text-slate-500 group-hover:text-slate-700'}`} 
               />
-              {item.name}
+              <span className="ml-3">{item.name}</span>
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-slate-200 p-6 bg-white">
-        <div className="flex items-center space-x-4">
-          <div className="h-10 w-10 rounded-full bg-red-600 flex items-center justify-center shadow-sm">
-            <User className="h-5 w-5 text-white" />
+      <div className="border-t border-slate-200 p-4 bg-gradient-to-t from-white to-slate-50">
+        <div className="flex items-center space-x-3">
+          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-sm">
+            <User className="h-4 w-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-slate-700 truncate">
@@ -87,7 +99,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <Button
             variant="ghost"
             size="sm"
-            className="hover:bg-slate-50 hover:text-slate-700 transition-all duration-200 rounded-lg"
+            className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-lg"
             onClick={async () => {
               await signOut();
               navigate('/signin');
@@ -136,8 +148,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="flex-1 px-6 flex justify-between items-center">
             <div className="flex-1 flex items-center">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                <h2 className="text-xl font-semibold text-slate-700">
+                <div className="w-3 h-3 bg-red-600 rounded-full shadow-sm"></div>
+                <h2 className="text-xl font-bold text-slate-800">
                   {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
                 </h2>
               </div>

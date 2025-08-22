@@ -223,39 +223,49 @@ const Analysis = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-            <h1 className="text-3xl font-semibold text-slate-700">Analysis</h1>
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-8 py-6 border-b border-blue-200">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">Analysis</h1>
+              <p className="text-slate-600 text-lg font-medium">Project performance and analytics</p>
+            </div>
           </div>
-          <p className="text-slate-500 text-lg">Project performance and analytics</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <Select value={selectedProject} onValueChange={setSelectedProject}>
-            <SelectTrigger className="w-48 bg-white border-slate-200 hover:border-slate-300 transition-colors">
-              <SelectValue placeholder="Select Project" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Projects</SelectItem>
-              {projects.map(project => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32 bg-white border-slate-200 hover:border-slate-300 transition-colors">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
-            </SelectContent>
-          </Select>
+        
+        <div className="px-8 py-6 flex justify-between items-center">
+          <div className="text-slate-500">
+            <span className="font-medium">{projects.length}</span> projects analyzed
+          </div>
+          <div className="flex items-center space-x-4">
+            <Select value={selectedProject} onValueChange={setSelectedProject}>
+              <SelectTrigger className="w-48 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
+                <SelectValue placeholder="Select Project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Projects</SelectItem>
+                {projects.map(project => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger className="w-32 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="quarter">This Quarter</SelectItem>
+                <SelectItem value="year">This Year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -263,71 +273,93 @@ const Analysis = () => {
 
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="engineering-card hover:shadow-md transition-all duration-200 transform hover:translate-y-[1px]">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Projects</CardTitle>
-            <Target className="h-5 w-5 text-red-600" />
+            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <Target className="h-5 w-5 text-red-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-slate-700">{totalProjects}</div>
-            <p className="text-xs text-slate-500 mt-1">
-              {activeProjects} active
-            </p>
+            <div className="text-4xl font-bold text-slate-800 mb-2">{totalProjects}</div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <p className="text-sm text-slate-600 font-medium">
+                {activeProjects} active
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card hover:shadow-md transition-all duration-200 transform hover:translate-y-[1px]">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Active Projects</CardTitle>
-            <TrendingUp className="h-5 w-5 text-green-600" />
+            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
+              <TrendingUp className="h-5 w-5 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">{activeProjects}</div>
-            <p className="text-xs text-slate-500 mt-1">
-              {totalProjects > 0 ? Math.round((activeProjects / totalProjects) * 100) : 0}% of total
-            </p>
+            <div className="text-4xl font-bold text-green-600 mb-2">{activeProjects}</div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <p className="text-sm text-slate-600 font-medium">
+                {totalProjects > 0 ? Math.round((activeProjects / totalProjects) * 100) : 0}% of total
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card hover:shadow-md transition-all duration-200 transform hover:translate-y-[1px]">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Hours</CardTitle>
-            <Clock className="h-5 w-5 text-red-600" />
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+              <Clock className="h-5 w-5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-slate-700">{totalHours.toFixed(1)}</div>
-            <p className="text-xs text-slate-500 mt-1">
-              Hours logged
-            </p>
+            <div className="text-4xl font-bold text-slate-800 mb-2">{totalHours.toFixed(1)}</div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <p className="text-sm text-slate-600 font-medium">
+                Hours logged
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card hover:shadow-md transition-all duration-200 transform hover:translate-y-[1px]">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Avg Progress</CardTitle>
-            <TrendingUp className="h-5 w-5 text-red-600" />
+            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <TrendingUp className="h-5 w-5 text-red-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-red-600">{Math.round(avgProgress)}%</div>
-            <p className="text-xs text-slate-500 mt-1">
-              Across all projects
-            </p>
+            <div className="text-4xl font-bold text-red-600 mb-2">{Math.round(avgProgress)}%</div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              <p className="text-sm text-slate-600 font-medium">
+                Across all projects
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Project Hours Chart */}
-      <Card className="engineering-card hover:shadow-md transition-all duration-200">
+      <Card className="engineering-card hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-6">
-          <CardTitle className="flex items-center gap-3 text-xl font-semibold text-slate-700">
-            <div className="p-2 bg-red-50 rounded-lg">
-              <BarChart3 className="h-6 w-6 text-red-600" />
+          <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <BarChart3 className="h-7 w-7 text-white" />
             </div>
-            Project Hours by Person
+            <div>
+              <div>Project Hours by Person</div>
+              <div className="text-base font-normal text-slate-500 mt-1">
+                Hours worked by each person on {selectedProject === 'all' ? 'all projects' : projects.find(p => p.id === selectedProject)?.name}
+              </div>
+            </div>
           </CardTitle>
-          <CardDescription className="text-slate-500 text-base mt-2">
-            Hours worked by each person on {selectedProject === 'all' ? 'all projects' : projects.find(p => p.id === selectedProject)?.name}
-          </CardDescription>
         </CardHeader>
         <CardContent>
           {projectHoursData.length > 0 ? (
