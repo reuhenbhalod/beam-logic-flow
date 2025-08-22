@@ -45,12 +45,12 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
   hasTimeEntries: boolean 
 }) => {
   return (
-    <Card className="engineering-card hover:shadow-2xl hover:shadow-engineering-red/10 transition-all duration-300 transform hover:scale-[1.02] border border-border/20 bg-gradient-to-br from-card via-card/95 to-card/90">
+    <Card className="engineering-card hover:shadow-md transition-all duration-200 transform hover:translate-y-[1px]">
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{project.name}</CardTitle>
-            <CardDescription className="mt-3 line-clamp-2 text-muted-foreground/80 text-base leading-relaxed">
+            <CardTitle className="text-xl font-semibold text-slate-700">{project.name}</CardTitle>
+            <CardDescription className="mt-3 line-clamp-2 text-slate-500 text-base leading-relaxed">
               {project.description}
             </CardDescription>
           </div>
@@ -58,7 +58,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-primary/10 hover:text-primary transition-all duration-200 rounded-lg"
+              className="hover:bg-slate-100 hover:text-slate-700 transition-all duration-200 rounded-lg"
               onClick={() => onEdit(project)}
               data-interactive
             >
@@ -67,7 +67,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 rounded-lg"
+              className="hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-lg"
               onClick={() => onDelete(project.id)}
               data-interactive
             >
@@ -88,37 +88,37 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
               </div>
             )}
           </div>
-          <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+          <span className="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full">
             {project.progress}% Complete
           </span>
         </div>
         
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground/60">Progress</span>
-            <span className="font-medium">{project.progress}%</span>
+            <span className="text-slate-500">Progress</span>
+            <span className="font-medium text-slate-700">{project.progress}%</span>
           </div>
-          <Progress value={project.progress} className="h-3 bg-muted/30" />
+          <Progress value={project.progress} className="h-3 bg-slate-100" />
         </div>
         
         <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center space-x-2 text-muted-foreground/80">
-            <Calendar className="h-4 w-4 text-primary" />
+          <div className="flex items-center space-x-2 text-slate-500">
+            <Calendar className="h-4 w-4 text-red-600" />
             <span>{new Date(project.start_date || project.created_at).toLocaleDateString()}</span>
           </div>
-          <div className="flex items-center space-x-2 text-muted-foreground/80">
-            <Clock className="h-4 w-4 text-primary" />
+          <div className="flex items-center space-x-2 text-slate-500">
+            <Clock className="h-4 w-4 text-red-600" />
             <span>{project.project_type || 'No Type'}</span>
           </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/20">
-          <div className="text-center p-3 bg-gradient-to-r from-engineering-red/10 to-engineering-red/5 rounded-xl border border-engineering-red/20">
-            <div className="text-xs text-muted-foreground/60 mb-1">Project Fee</div>
-            <div className="font-bold text-engineering-red text-lg">${project.fee?.toLocaleString() || '0'}</div>
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200">
+          <div className="text-center p-3 bg-red-50 rounded-xl border border-red-200">
+            <div className="text-xs text-slate-500 mb-1">Project Fee</div>
+            <div className="font-bold text-red-600 text-lg">${project.fee?.toLocaleString() || '0'}</div>
           </div>
-          <div className="text-center p-3 bg-gradient-to-r from-blue-500/10 to-blue-500/5 rounded-xl border border-blue-500/20">
-            <div className="text-xs text-muted-foreground/60 mb-1">Budget</div>
+          <div className="text-center p-3 bg-blue-50 rounded-xl border border-blue-200">
+            <div className="text-xs text-slate-500 mb-1">Budget</div>
             <div className="font-bold text-blue-600 text-lg">${project.budget?.toLocaleString() || '0'}</div>
           </div>
         </div>
@@ -292,17 +292,17 @@ const Projects = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center bg-gradient-to-r from-card via-card/95 to-card/90 p-6 rounded-2xl border border-border/20 shadow-lg">
+      <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-primary rounded-full"></div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent">Projects</h1>
+            <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+            <h1 className="text-3xl font-semibold text-slate-700">Projects</h1>
           </div>
-          <p className="text-muted-foreground/80 text-lg">Manage your engineering projects</p>
+          <p className="text-slate-500 text-lg">Manage your engineering projects</p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-engineering-red to-engineering-red/80 hover:from-engineering-red/90 hover:to-engineering-red shadow-lg shadow-engineering-red/25 hover:shadow-xl hover:shadow-engineering-red/30 transition-all duration-300 transform hover:scale-105 px-6 py-3 text-base font-semibold">
+            <Button className="bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-md transition-all duration-200 transform hover:translate-y-[1px] px-6 py-3 text-base font-semibold">
               <Plus className="h-5 w-5 mr-2" />
               New Project
             </Button>
@@ -447,11 +447,11 @@ const Projects = () => {
 
       {/* Projects Tabs */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-muted/30 via-muted/20 to-muted/30 p-1 rounded-2xl border border-border/20 shadow-lg">
-          <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">All Projects</TabsTrigger>
-          <TabsTrigger value="active" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">Active</TabsTrigger>
-          <TabsTrigger value="completed" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">Completed</TabsTrigger>
-          <TabsTrigger value="planning" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-xl transition-all duration-300">Planning</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-slate-100 p-1 rounded-2xl border border-slate-200 shadow-sm">
+          <TabsTrigger value="all" className="data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-xl transition-all duration-200">All Projects</TabsTrigger>
+          <TabsTrigger value="active" className="data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-xl transition-all duration-200">Active</TabsTrigger>
+          <TabsTrigger value="completed" className="data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-xl transition-all duration-200">Completed</TabsTrigger>
+          <TabsTrigger value="planning" className="data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-xl transition-all duration-200">Planning</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-6">
