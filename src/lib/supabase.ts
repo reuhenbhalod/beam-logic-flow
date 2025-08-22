@@ -117,6 +117,47 @@ export type Database = {
           role?: string
         }
       }
+      people: {
+        Row: {
+          id: string
+          name: string
+          email: string | null
+          phone: string | null
+          role: string | null
+          department: string | null
+          hourly_rate: number | null
+          notes: string | null
+          created_by: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email?: string | null
+          phone?: string | null
+          role?: string | null
+          department?: string | null
+          hourly_rate?: number | null
+          notes?: string | null
+          created_by: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string | null
+          phone?: string | null
+          role?: string | null
+          department?: string | null
+          hourly_rate?: number | null
+          notes?: string | null
+          created_by?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
   }
 } 

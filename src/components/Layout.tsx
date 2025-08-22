@@ -8,7 +8,8 @@ import {
   Menu,
   Clock,
   User,
-  LogOut
+  LogOut,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -19,6 +20,7 @@ import TimeLogger from './TimeLogger';
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
+  { name: 'People', href: '/people', icon: Users },
   { name: 'Analysis', href: '/analysis', icon: BarChart3 },
   { name: 'Reports', href: '/reports', icon: FileText },
 ];

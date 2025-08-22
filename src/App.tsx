@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
+import People from "./pages/People";
 import Analysis from "./pages/Analysis";
 import Reports from "./pages/Reports";
 import SignIn from "./pages/SignIn";
@@ -50,10 +51,11 @@ const App = () => (
                 <ProtectedRoute>
                   <Layout>
                     <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/projects" element={<Projects />} />
-                      <Route path="/analysis" element={<Analysis />} />
-                      <Route path="/reports" element={<Reports />} />
+                                        <Route path="/" element={<Dashboard />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/people" element={<People />} />
+                  <Route path="/analysis" element={<Analysis />} />
+                  <Route path="/reports" element={<Reports />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Layout>

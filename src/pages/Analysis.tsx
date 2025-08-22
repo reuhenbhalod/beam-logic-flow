@@ -12,6 +12,7 @@ import type { Database } from '@/lib/supabase'
 
 type Project = Database['public']['Tables']['projects']['Row']
 type TimeEntry = Database['public']['Tables']['time_entries']['Row']
+type Person = Database['public']['Tables']['people']['Row']
 
 const Analysis = () => {
   const [projects, setProjects] = useState<Project[]>([])
@@ -21,6 +22,7 @@ const Analysis = () => {
   const [timeRange, setTimeRange] = useState('month')
   const [selectedProject, setSelectedProject] = useState<string>('all')
   const [users, setUsers] = useState<{ id: string; full_name: string }[]>([])
+  const [people, setPeople] = useState<Person[]>([])
   const { user } = useAuth()
 
   useEffect(() => {
@@ -61,9 +63,20 @@ const Analysis = () => {
         // Don't throw error for users, just log it
       }
 
+      // Fetch people
+      const { data: peopleData, error: peopleError } = await supabase
+        .from('people')
+        .select('*')
+
+      if (peopleError) {
+        console.error('People error:', peopleError)
+        // Don't throw error for people, just log it
+      }
+
       setProjects(projectsData || [])
       setTimeEntries(timeData || [])
       setUsers(usersData || [])
+      setPeople(peopleData || [])
     } catch (err) {
       console.error('Error in fetchData:', err)
       setError(err instanceof Error ? err.message : 'Unknown error occurred')
@@ -241,30 +254,49 @@ const Analysis = () => {
             <span className="font-medium">{projects.length}</span> projects analyzed
           </div>
           <div className="flex items-center space-x-4">
-            <Select value={selectedProject} onValueChange={setSelectedProject}>
-              <SelectTrigger className="w-48 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
-                <SelectValue placeholder="Select Project" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
-                {projects.map(project => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.name}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-600">Project Filter</label>
+              <Select value={selectedProject} onValueChange={setSelectedProject}>
+                <SelectTrigger className="w-56 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
+                  <SelectValue placeholder="Select Project to Analyze" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                      All Projects
+                    </div>
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-32 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="quarter">This Quarter</SelectItem>
-                <SelectItem value="year">This Year</SelectItem>
-              </SelectContent>
-            </Select>
+                  {projects.map(project => (
+                    <SelectItem key={project.id} value={project.id}>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          project.status === 'active' ? 'bg-green-500' :
+                          project.status === 'completed' ? 'bg-blue-500' :
+                          project.status === 'on-hold' ? 'bg-yellow-500' :
+                          'bg-slate-400'
+                        }`}></div>
+                        {project.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-600">Time Range</label>
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger className="w-32 bg-white border-slate-200 hover:border-slate-300 transition-colors shadow-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="quarter">This Quarter</SelectItem>
+                  <SelectItem value="year">This Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
