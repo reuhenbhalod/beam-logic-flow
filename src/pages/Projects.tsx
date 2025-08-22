@@ -45,7 +45,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
   hasTimeEntries: boolean 
 }) => {
   return (
-    <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group">
+    <Card className="engineering-card hover:shadow-xl transition-all duration-300 group">
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex-1">
@@ -127,9 +127,9 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Project Fee</div>
             <div className="font-bold text-red-800 text-xl">${project.fee?.toLocaleString() || '0'}</div>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200 shadow-sm">
+          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border border-red-200 shadow-sm">
             <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Budget</div>
-            <div className="font-bold text-blue-700 text-xl">${project.budget?.toLocaleString() || '0'}</div>
+            <div className="font-bold text-red-800 text-xl">${project.budget?.toLocaleString() || '0'}</div>
           </div>
         </div>
       </CardContent>
@@ -321,7 +321,7 @@ const Projects = () => {
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-red-800 hover:bg-red-900 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-8 py-4 text-base font-bold rounded-2xl">
+              <Button className="bg-red-800 hover:bg-red-900 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 text-base font-bold rounded-2xl">
                 <Plus className="h-6 w-6 mr-3" />
                 New Project
               </Button>

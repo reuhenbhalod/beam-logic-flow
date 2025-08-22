@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { TrendingUp, TrendingDown, Clock, DollarSign, Users, Target, BarChart3, PieChart as PieChartIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
@@ -22,14 +22,14 @@ const Analysis = () => {
   const [timeRange, setTimeRange] = useState('month')
   const [selectedProject, setSelectedProject] = useState<string>('all')
   const [users, setUsers] = useState<{ id: string; full_name: string }[]>([])
-  const [people, setPeople] = useState<Person[]>([])
+    const [people, setPeople] = useState<Person[]>([])
   const { user } = useAuth()
 
   useEffect(() => {
     fetchData()
-  }, [timeRange, selectedProject])
+  }, [fetchData])
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setError(null)
       
@@ -83,22 +83,26 @@ const Analysis = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  // Safe calculations with error handling
-  const totalProjects = projects?.length || 0
-  const activeProjects = projects?.filter(p => p.status === 'active')?.length || 0
-  const completedProjects = projects?.filter(p => p.status === 'completed')?.length || 0
-  const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.hours || 0), 0) || 0
-  const avgProgress = projects?.length > 0 ? projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length : 0
-  
-  // Safe financial calculations
-  const totalFees = projects?.reduce((sum, p) => sum + (Number(p.fee) || 0), 0) || 0
-  const totalCost = timeEntries?.reduce((sum, entry) => {
-    const project = projects?.find(p => p.id === entry.project_id)
-    const hourlyRate = Number(project?.target_hourly_rate) || 0
-    return sum + ((entry.hours || 0) * hourlyRate)
-  }, 0) || 0
+  // Memoized calculations for better performance
+  const { totalProjects, activeProjects, completedProjects, totalHours, avgProgress, totalFees, totalCost } = useMemo(() => {
+    const totalProjects = projects?.length || 0
+    const activeProjects = projects?.filter(p => p.status === 'active')?.length || 0
+    const completedProjects = projects?.filter(p => p.status === 'completed')?.length || 0
+    const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.hours || 0), 0) || 0
+    const avgProgress = projects?.length > 0 ? projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length : 0
+    
+    // Safe financial calculations
+    const totalFees = projects?.reduce((sum, p) => sum + (Number(p.fee) || 0), 0) || 0
+    const totalCost = timeEntries?.reduce((sum, entry) => {
+      const project = projects?.find(p => p.id === entry.project_id)
+      const hourlyRate = Number(project?.target_hourly_rate) || 0
+      return sum + ((entry.hours || 0) * hourlyRate)
+    }, 0) || 0
+
+    return { totalProjects, activeProjects, completedProjects, totalHours, avgProgress, totalFees, totalCost }
+  }, [projects, timeEntries])
   
   const grossMargin = totalFees - totalCost
   const profitMargin = totalFees > 0 ? (grossMargin / totalFees) * 100 : 0
@@ -123,7 +127,7 @@ const Analysis = () => {
   ]
 
   // Generate project hours chart data
-  const generateProjectHoursData = () => {
+  const generateProjectHoursData = useCallback(() => {
     if (!timeEntries.length || !users.length) return []
 
     const filteredEntries = selectedProject === 'all' 
@@ -157,10 +161,10 @@ const Analysis = () => {
     })
 
     return chartData
-  }
+  }, [selectedProject, timeEntries, users, projects])
 
   // Generate task type breakdown data
-  const generateTaskTypeData = () => {
+  const generateTaskTypeData = useCallback(() => {
     if (!timeEntries.length) return []
 
     const taskBreakdown: { [key: string]: number } = {}
@@ -175,15 +179,17 @@ const Analysis = () => {
       value: hours,
       color: `hsl(${Math.random() * 360}, 70%, 50%)`
     }))
-  }
+  }, [timeEntries])
 
-  const projectHoursData = generateProjectHoursData()
-  const taskTypeData = generateTaskTypeData()
+  const projectHoursData = useMemo(() => generateProjectHoursData(), [generateProjectHoursData])
+  const taskTypeData = useMemo(() => generateTaskTypeData(), [generateTaskTypeData])
 
-  const projectProgressData = projects?.slice(0, 5).map(project => ({
-    name: project.name,
-    progress: project.progress || 0,
-  })) || []
+  const projectProgressData = useMemo(() => 
+    projects?.slice(0, 5).map(project => ({
+      name: project.name,
+      progress: project.progress || 0,
+    })) || [], [projects]
+  )
 
   if (error) {
     return (
@@ -237,9 +243,9 @@ const Analysis = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-8 py-6 border-b border-blue-200">
+        <div className="bg-gradient-to-r from-red-50 to-red-100 px-8 py-6 border-b border-red-200">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -305,12 +311,12 @@ const Analysis = () => {
 
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Projects</CardTitle>
-            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
-              <Target className="h-5 w-5 text-red-600" />
-            </div>
+                       <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+             <Target className="h-5 w-5 text-red-800" />
+           </div>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold text-slate-800 mb-2">{totalProjects}</div>
@@ -323,17 +329,17 @@ const Analysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Active Projects</CardTitle>
-            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <TrendingUp className="h-5 w-5 text-red-800" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-green-600 mb-2">{activeProjects}</div>
+            <div className="text-4xl font-bold text-red-800 mb-2">{activeProjects}</div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
               <p className="text-sm text-slate-600 font-medium">
                 {totalProjects > 0 ? Math.round((activeProjects / totalProjects) * 100) : 0}% of total
               </p>
@@ -341,17 +347,17 @@ const Analysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Hours</CardTitle>
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-              <Clock className="h-5 w-5 text-blue-600" />
+            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <Clock className="h-5 w-5 text-red-800" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold text-slate-800 mb-2">{totalHours.toFixed(1)}</div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
               <p className="text-sm text-slate-600 font-medium">
                 Hours logged
               </p>
@@ -359,7 +365,7 @@ const Analysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+        <Card className="engineering-card hover:shadow-xl transition-all duration-300 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-500 uppercase tracking-wide">Avg Progress</CardTitle>
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
@@ -367,9 +373,9 @@ const Analysis = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-red-600 mb-2">{Math.round(avgProgress)}%</div>
+            <div className="text-4xl font-bold text-red-800 mb-2">{Math.round(avgProgress)}%</div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
               <p className="text-sm text-slate-600 font-medium">
                 Across all projects
               </p>
@@ -443,7 +449,7 @@ const Analysis = () => {
       <Card className="engineering-card hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-700 to-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <PieChartIcon className="h-7 w-7 text-white" />
             </div>
             <div>
@@ -495,7 +501,7 @@ const Analysis = () => {
       <Card className="engineering-card hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-700 to-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <DollarSign className="h-7 w-7 text-white" />
             </div>
             <div>
@@ -556,7 +562,7 @@ const Analysis = () => {
       <Card className="engineering-card hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-700 to-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <Target className="h-7 w-7 text-white" />
             </div>
             <div>
@@ -633,7 +639,7 @@ const Analysis = () => {
       <Card className="engineering-card hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-4 text-2xl font-bold text-slate-800">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-700 to-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <BarChart3 className="h-7 w-7 text-white" />
             </div>
             <div>

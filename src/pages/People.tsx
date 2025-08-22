@@ -179,9 +179,9 @@ const People = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-8 py-6 border-b border-blue-200">
+        <div className="bg-gradient-to-r from-red-50 to-red-100 px-8 py-6 border-b border-red-200">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-red-800 rounded-2xl flex items-center justify-center shadow-lg">
               <User className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -197,7 +197,7 @@ const People = () => {
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-8 py-4 text-base font-bold rounded-2xl">
+              <Button className="bg-red-800 hover:bg-red-900 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 text-base font-bold rounded-2xl">
                 <Plus className="h-6 w-6 mr-3" />
                 Add Person
               </Button>
@@ -297,9 +297,9 @@ const People = () => {
                   <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
-                    Add Person
-                  </Button>
+                                   <Button type="submit" className="bg-red-800 hover:bg-red-900 text-white">
+                   Add Person
+                 </Button>
                 </div>
               </form>
             </DialogContent>
@@ -316,12 +316,12 @@ const People = () => {
       {/* People Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {people.map((person) => (
-          <Card key={person.id} className="engineering-card hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group">
+          <Card key={person.id} className="engineering-card hover:shadow-xl transition-all duration-300 group">
             <CardHeader className="pb-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <CardTitle className="text-xl font-bold text-slate-800 group-hover:text-blue-700 transition-colors flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                     <CardTitle className="text-xl font-bold text-slate-800 group-hover:text-red-700 transition-colors flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-red-700 to-red-800 rounded-full flex items-center justify-center text-white font-bold text-sm">
                       {person.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                     </div>
                     {person.name}
@@ -333,13 +333,13 @@ const People = () => {
                   )}
                 </div>
                 <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 rounded-xl"
-                    onClick={() => openEditDialog(person)}
-                    data-interactive
-                  >
+                                     <Button
+                     variant="ghost"
+                     size="sm"
+                     className="hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-xl"
+                     onClick={() => openEditDialog(person)}
+                     data-interactive
+                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
@@ -356,30 +356,30 @@ const People = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {person.department && (
-                <div className="flex items-center space-x-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-                  <Building className="h-5 w-5 text-blue-600" />
+                               <div className="flex items-center space-x-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
+                 <Building className="h-5 w-5 text-red-800" />
                   <span className="font-medium">{person.department}</span>
                 </div>
               )}
               
-              {person.email && (
-                <div className="flex items-center space-x-3 text-slate-600">
-                  <Mail className="h-4 w-4 text-blue-600" />
+                             {person.email && (
+                 <div className="flex items-center space-x-3 text-slate-600">
+                   <Mail className="h-4 w-4 text-red-800" />
                   <span className="text-sm">{person.email}</span>
                 </div>
               )}
               
-              {person.phone && (
-                <div className="flex items-center space-x-3 text-slate-600">
-                  <Phone className="h-4 w-4 text-blue-600" />
+                             {person.phone && (
+                 <div className="flex items-center space-x-3 text-slate-600">
+                   <Phone className="h-4 w-4 text-red-800" />
                   <span className="text-sm">{person.phone}</span>
                 </div>
               )}
               
               {person.hourly_rate && person.hourly_rate > 0 && (
-                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-200 shadow-sm">
-                  <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Hourly Rate</div>
-                  <div className="font-bold text-green-700 text-xl">${person.hourly_rate}/hr</div>
+                                 <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border border-red-200 shadow-sm">
+                   <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Hourly Rate</div>
+                   <div className="font-bold text-red-800 text-xl">${person.hourly_rate}/hr</div>
                 </div>
               )}
               
@@ -491,9 +491,9 @@ const People = () => {
               <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
-                Update Person
-              </Button>
+                               <Button type="submit" className="bg-red-800 hover:bg-red-900 text-white">
+                   Update Person
+                 </Button>
             </div>
           </form>
         </DialogContent>
