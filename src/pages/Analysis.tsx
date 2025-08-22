@@ -277,9 +277,9 @@ const Analysis = () => {
                     <SelectItem key={project.id} value={project.id}>
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${
-                          project.status === 'active' ? 'bg-green-500' :
-                          project.status === 'completed' ? 'bg-blue-500' :
-                          project.status === 'on-hold' ? 'bg-yellow-500' :
+                          project.status === 'active' ? 'bg-red-800' :
+                          project.status === 'completed' ? 'bg-red-600' :
+                          project.status === 'on-hold' ? 'bg-red-700' :
                           'bg-slate-400'
                         }`}></div>
                         <span className="font-medium">{project.name}</span>
@@ -321,7 +321,7 @@ const Analysis = () => {
           <CardContent>
             <div className="text-4xl font-bold text-slate-800 mb-2">{totalProjects}</div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-red-800 rounded-full"></div>
               <p className="text-sm text-slate-600 font-medium">
                 {activeProjects} active
               </p>
@@ -534,19 +534,19 @@ const Analysis = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Fee: ${project.fee?.toLocaleString() || '0'}</span>
-                      <span className={feeSpent > 100 ? 'text-red-600' : 'text-green-600'}>
-                        {feeSpent > 100 ? 'Over Budget' : `${feeSpent.toFixed(1)}% spent`}
-                      </span>
+                                      <span className={feeSpent > 100 ? 'text-red-800' : 'text-red-600'}>
+                  {feeSpent > 100 ? 'Over Budget' : `${feeSpent.toFixed(1)}% spent`}
+                </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Budget: ${project.budget?.toLocaleString() || '0'}</span>
-                      <span className={budgetSpent > 100 ? 'text-red-600' : 'text-green-600'}>
+                      <span className={budgetSpent > 100 ? 'text-red-800' : 'text-red-600'}>
                         {budgetSpent > 100 ? 'Over Budget' : `${budgetSpent.toFixed(1)}% spent`}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className={`h-2 rounded-full ${budgetSpent > 100 ? 'bg-red-500' : 'bg-green-500'}`}
+                        className={`h-2 rounded-full ${budgetSpent > 100 ? 'bg-red-800' : 'bg-red-600'}`}
                         style={{ width: `${Math.min(budgetSpent, 100)}%` }}
                       ></div>
                     </div>
@@ -616,13 +616,13 @@ const Analysis = () => {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Budget Status:</span>
-                        <span className={budgetSpent > 100 ? 'text-red-600' : 'text-green-600'}>
+                        <span className={budgetSpent > 100 ? 'text-red-800' : 'text-red-600'}>
                           {budgetSpent > 100 ? 'Over Budget' : `${budgetSpent.toFixed(1)}% spent`}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          className={`h-2 rounded-full ${budgetSpent > 100 ? 'bg-red-500' : 'bg-green-500'}`}
+                          className={`h-2 rounded-full ${budgetSpent > 100 ? 'bg-red-800' : 'bg-red-600'}`}
                           style={{ width: `${Math.min(budgetSpent, 100)}%` }}
                         ></div>
                       </div>

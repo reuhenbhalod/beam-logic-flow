@@ -83,7 +83,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
               {getStatusText(project.status)}
             </Badge>
             {hasTimeEntries && (
-              <div className="flex items-center text-amber-600 bg-amber-50 p-2 rounded-full shadow-sm" title="This project has time entries logged">
+              <div className="flex items-center text-red-800 bg-red-50 p-2 rounded-full shadow-sm" title="This project has time entries logged">
                 <AlertTriangle className="h-4 w-4" />
               </div>
             )}

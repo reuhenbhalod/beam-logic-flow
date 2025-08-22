@@ -155,12 +155,12 @@ const People = () => {
 
   const getRoleColor = (role: string) => {
     switch (role?.toLowerCase()) {
-      case 'engineer': return 'bg-blue-100 text-blue-700'
-      case 'architect': return 'bg-purple-100 text-purple-700'
-      case 'project manager': return 'bg-green-100 text-green-700'
-      case 'drafter': return 'bg-yellow-100 text-yellow-700'
-      case 'consultant': return 'bg-orange-100 text-orange-700'
-      default: return 'bg-gray-100 text-gray-700'
+      case 'engineer': return 'bg-red-100 text-red-700'
+      case 'architect': return 'bg-red-100 text-red-700'
+      case 'project manager': return 'bg-red-100 text-red-700'
+      case 'drafter': return 'bg-red-100 text-red-700'
+      case 'consultant': return 'bg-red-100 text-red-700'
+      default: return 'bg-red-100 text-red-700'
     }
   }
 
