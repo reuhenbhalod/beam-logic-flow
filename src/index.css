@@ -110,7 +110,7 @@ All colors MUST be HSL. Sophisticated design matching Analysis page styling.
   }
 
   .engineering-card:hover {
-    @apply shadow-3xl;
+    @apply shadow-2xl;
     transform: translateY(-4px) scale(1.02);
   }
 
@@ -120,7 +120,7 @@ All colors MUST be HSL. Sophisticated design matching Analysis page styling.
   }
 
   .engineering-card-dark:hover {
-    @apply shadow-3xl;
+    @apply shadow-2xl;
     transform: translateY(-4px) scale(1.02);
     box-shadow: var(--shadow-dramatic), var(--shadow-glow-red);
   }

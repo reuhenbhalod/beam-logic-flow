@@ -294,7 +294,7 @@ const Analysis = () => {
 
       {/* Key Metrics */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group relative overflow-hidden">
+        <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-red-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-bold text-gray-600 uppercase tracking-wider">Total Projects</CardTitle>
@@ -313,7 +313,7 @@ const Analysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-950 to-black border-red-800/30 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group relative overflow-hidden">
+        <Card className="bg-gradient-to-br from-red-950 to-black border-red-800/30 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-red-700/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-bold text-red-200 uppercase tracking-wider">Active Projects</CardTitle>
@@ -332,7 +332,7 @@ const Analysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group relative overflow-hidden">
+        <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-red-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-bold text-gray-600 uppercase tracking-wider">Total Hours</CardTitle>
@@ -351,7 +351,7 @@ const Analysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-950 to-black border-red-800/30 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group relative overflow-hidden">
+        <Card className="bg-gradient-to-br from-red-950 to-black border-red-800/30 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-red-700/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-bold text-red-200 uppercase tracking-wider">Avg Progress</CardTitle>
@@ -372,7 +372,7 @@ const Analysis = () => {
       </div>
 
       {/* Project Hours Chart */}
-      <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden relative">
+      <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-br from-red-900/5 to-transparent opacity-50"></div>
         <CardHeader className="pb-8 relative z-10">
           <CardTitle className="flex items-center gap-6 text-3xl font-bold text-black">
@@ -448,7 +448,7 @@ const Analysis = () => {
       </Card>
 
       {/* Task Type Breakdown */}
-      <Card className="bg-gradient-to-br from-black to-red-950 border-red-800/30 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden relative">
+      <Card className="bg-gradient-to-br from-black to-red-950 border-red-800/30 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-br from-red-700/10 to-transparent opacity-50"></div>
         <CardHeader className="pb-8 relative z-10">
           <CardTitle className="flex items-center gap-6 text-3xl font-bold text-white">
@@ -512,7 +512,7 @@ const Analysis = () => {
       </Card>
 
       {/* Fee Spending Tracking */}
-      <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden relative">
+      <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-br from-red-900/5 to-transparent opacity-50"></div>
         <CardHeader className="pb-8 relative z-10">
           <CardTitle className="flex items-center gap-6 text-3xl font-bold text-black">
@@ -600,7 +600,7 @@ const Analysis = () => {
       </Card>
 
       {/* Task Budget Tracking */}
-      <Card className="bg-gradient-to-br from-black to-red-950 border-red-800/30 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden relative">
+      <Card className="bg-gradient-to-br from-black to-red-950 border-red-800/30 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-br from-red-700/10 to-transparent opacity-50"></div>
         <CardHeader className="pb-8 relative z-10">
           <CardTitle className="flex items-center gap-6 text-3xl font-bold text-white">
@@ -694,7 +694,7 @@ const Analysis = () => {
       </Card>
 
       {/* Project Status Distribution */}
-      <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden relative">
+      <Card className="bg-gradient-to-br from-white to-gray-50 border-red-900/20 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-br from-red-900/5 to-transparent opacity-50"></div>
         <CardHeader className="pb-8 relative z-10">
           <CardTitle className="flex items-center gap-6 text-3xl font-bold text-black">
