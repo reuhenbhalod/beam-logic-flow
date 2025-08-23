@@ -115,7 +115,7 @@ const Dashboard = () => {
         <TimeLogger />
         <Button 
           variant="outline" 
-          className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white" 
+          className="modern-btn-secondary" 
           onClick={() => navigate('/projects')}
           data-interactive
         >
@@ -126,52 +126,52 @@ const Dashboard = () => {
 
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Total Projects</CardTitle>
+            <Target className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{dashboardData.totalProjects}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold text-white">{dashboardData.totalProjects}</div>
+            <p className="text-xs text-neutral-400">
               {dashboardData.activeProjects} active
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Total Hours</CardTitle>
+            <Clock className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{dashboardData.totalHours.toFixed(1)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold text-white">{dashboardData.totalHours.toFixed(1)}</div>
+            <p className="text-xs text-neutral-400">
               Hours logged
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Fees</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Total Fees</CardTitle>
+            <DollarSign className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${dashboardData.totalFees.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold text-white">${dashboardData.totalFees.toLocaleString()}</div>
+            <p className="text-xs text-neutral-400">
               Project value
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Hourly Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Avg Hourly Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-white">
               ${dashboardData.totalHours > 0 ? (dashboardData.totalFees / dashboardData.totalHours).toFixed(0) : '0'}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-neutral-400">
               Per hour
             </p>
           </CardContent>
@@ -180,63 +180,63 @@ const Dashboard = () => {
 
       {/* Today's Overview */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="engineering-card">
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Today's Hours</CardTitle>
+            <Clock className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-engineering-red">6.5</div>
-            <p className="text-xs text-muted-foreground">+2.3 from yesterday</p>
+            <div className="text-2xl font-bold text-brand-red-400">6.5</div>
+            <p className="text-xs text-neutral-400">+2.3 from yesterday</p>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Active Projects</CardTitle>
+            <TrendingUp className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">3 due this week</p>
+            <div className="text-2xl font-bold text-white">8</div>
+            <p className="text-xs text-neutral-400">3 due this week</p>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
+        <Card className="modern-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Week Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Week Progress</CardTitle>
+            <TrendingUp className="h-4 w-4 text-brand-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">68%</div>
+            <div className="text-2xl font-bold text-white">68%</div>
             <Progress value={68} className="mt-2" />
           </CardContent>
         </Card>
 
-        <Card className="engineering-card border-status-warning">
+        <Card className="modern-card border-yellow-500/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-status-warning" />
+            <CardTitle className="text-sm font-medium text-neutral-200">Alerts</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-status-warning">3</div>
-            <p className="text-xs text-muted-foreground">Require attention</p>
+            <div className="text-2xl font-bold text-yellow-400">3</div>
+            <p className="text-xs text-neutral-400">Require attention</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Weekly Hours Chart */}
-      <Card className="engineering-card">
+      <Card className="modern-card">
         <CardHeader>
-          <CardTitle>Weekly Hours by Role</CardTitle>
-          <CardDescription>Time distribution across different roles this week</CardDescription>
+          <CardTitle className="text-white">Weekly Hours by Role</CardTitle>
+          <CardDescription className="text-neutral-400">Time distribution across different roles this week</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[300px]">
             <BarChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
+              <XAxis dataKey="day" stroke="#a3a3a3" />
+              <YAxis stroke="#a3a3a3" />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Bar dataKey="drafting" fill="var(--color-drafting)" />
               <Bar dataKey="engineering" fill="var(--color-engineering)" />
@@ -247,45 +247,43 @@ const Dashboard = () => {
       </Card>
 
       {/* Burn Rate Chart */}
-      <Card className="engineering-card">
+      <Card className="modern-card">
         <CardHeader>
-          <CardTitle>Burn Rate Analysis</CardTitle>
-          <CardDescription>Fee used vs Time elapsed by project</CardDescription>
+          <CardTitle className="text-white">Burn Rate Analysis</CardTitle>
+          <CardDescription className="text-neutral-400">Fee used vs Time elapsed by project</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={dashboardData.burnRateData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <ChartTooltip>
-                {({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div className="rounded-lg border bg-background p-2 shadow-sm">
-                        <div className="grid grid-cols-1 gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className="font-medium">{label}</div>
-                          </div>
-                          {payload.map((item: any, index: number) => (
-                            <div key={index} className="flex items-center gap-2 text-xs">
-                              <div
-                                className="h-2 w-2 rounded-full"
-                                style={{ backgroundColor: item.dataKey === 'feeUsed' ? '#ef4444' : '#3b82f6' }}
-                              />
-                              <span className="font-medium text-muted-foreground">
-                                {item.dataKey === 'feeUsed' ? 'Fee Used' : 'Time Elapsed'}:
-                              </span>
-                              <span className="font-medium">{item.value.toFixed(1)}%</span>
-                            </div>
-                          ))}
+              <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
+              <XAxis dataKey="name" stroke="#a3a3a3" />
+              <YAxis stroke="#a3a3a3" />
+              <ChartTooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  return (
+                    <div className="rounded-lg border border-neutral-700 bg-neutral-900 p-2 shadow-lg">
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-white">{label}</div>
                         </div>
+                        {payload.map((item: any) => (
+                          <div key={item.dataKey} className="flex items-center gap-2 text-xs">
+                            <div
+                              className="h-2 w-2 rounded-full"
+                              style={{ backgroundColor: item.dataKey === 'feeUsed' ? '#ef4444' : '#3b82f6' }}
+                            />
+                            <span className="font-medium text-neutral-400">
+                              {item.dataKey === 'feeUsed' ? 'Fee Used' : 'Time Elapsed'}:
+                            </span>
+                            <span className="font-medium text-white">{item.value.toFixed(1)}%</span>
+                          </div>
+                        ))}
                       </div>
-                    );
-                  }
-                  return null;
+                    </div>
+                  );
                 }}
-              </ChartTooltip>
+              />
               <Bar dataKey="feeUsed" fill="#ef4444" radius={[4, 4, 0, 0]} name="Fee Used" />
               <Bar dataKey="timeElapsed" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Time Elapsed" />
             </BarChart>
@@ -294,10 +292,10 @@ const Dashboard = () => {
       </Card>
 
       {/* Role Distribution Chart */}
-      <Card className="engineering-card">
+      <Card className="modern-card">
         <CardHeader>
-          <CardTitle>Hours by Role</CardTitle>
-          <CardDescription>Distribution of logged hours by role</CardDescription>
+          <CardTitle className="text-white">Hours by Role</CardTitle>
+          <CardDescription className="text-neutral-400">Distribution of logged hours by role</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -313,29 +311,27 @@ const Dashboard = () => {
                 dataKey="value"
               >
                 {dashboardData.roleDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][index % 5]} />
+                  <Cell key={`role-${entry.name}-${index}`} fill={['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][index % 5]} />
                 ))}
               </Pie>
-              <ChartTooltip>
-                {({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div className="rounded-lg border bg-background p-2 shadow-sm">
-                        <div className="grid grid-cols-1 gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className="font-medium">{payload[0].name}</div>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="font-medium text-muted-foreground">Hours:</span>
-                            <span className="font-medium">{payload[0].value}</span>
-                          </div>
+              <ChartTooltip
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  return (
+                    <div className="rounded-lg border border-neutral-700 bg-neutral-900 p-2 shadow-lg">
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-white">{payload[0].name}</div>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-medium text-neutral-400">Hours:</span>
+                          <span className="font-medium text-white">{payload[0].value}</span>
                         </div>
                       </div>
-                    );
-                  }
-                  return null;
+                    </div>
+                  );
                 }}
-              </ChartTooltip>
+              />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
@@ -343,28 +339,28 @@ const Dashboard = () => {
 
       {/* Project Status */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="engineering-card">
+        <Card className="modern-card">
           <CardHeader>
-            <CardTitle>Recent Projects</CardTitle>
+            <CardTitle className="text-white">Recent Projects</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {[
               { name: 'Office Complex Phase 1', progress: 75, status: 'active' },
               { name: 'Residential Tower Foundation', progress: 45, status: 'active' },
               { name: 'Industrial Warehouse Retrofit', progress: 20, status: 'planning' },
-            ].map((project, index) => (
-              <div key={index} className="flex items-center justify-between">
+            ].map((project) => (
+              <div key={project.name} className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">{project.name}</p>
+                  <p className="text-sm font-medium text-white">{project.name}</p>
                   <div className="flex items-center space-x-2">
                     <div className={`w-2 h-2 rounded-full ${
-                      project.status === 'active' ? 'status-active' : 'status-warning'
+                      project.status === 'active' ? 'bg-brand-red-500' : 'bg-yellow-400'
                     }`} />
-                    <span className="text-xs text-muted-foreground capitalize">{project.status}</span>
+                    <span className="text-xs text-neutral-400 capitalize">{project.status}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium">{project.progress}%</p>
+                  <p className="text-sm font-medium text-white">{project.progress}%</p>
                   <Progress value={project.progress} className="w-[60px]" />
                 </div>
               </div>
@@ -372,22 +368,22 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
+        <Card className="modern-card">
           <CardHeader>
-            <CardTitle>Alerts & Notifications</CardTitle>
+            <CardTitle className="text-white">Alerts & Notifications</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="p-3 rounded-lg border border-status-warning/20 bg-status-warning/5">
-              <p className="text-sm font-medium text-status-warning">Budget Alert</p>
-              <p className="text-xs text-muted-foreground">Office Complex has exceeded 80% fee allocation</p>
+            <div className="p-3 rounded-lg border border-yellow-500/20 bg-yellow-500/10">
+              <p className="text-sm font-medium text-yellow-400">Budget Alert</p>
+              <p className="text-xs text-neutral-400">Office Complex has exceeded 80% fee allocation</p>
             </div>
-            <div className="p-3 rounded-lg border border-status-danger/20 bg-status-danger/5">
-              <p className="text-sm font-medium text-status-danger">Time Entry Missing</p>
-              <p className="text-xs text-muted-foreground">No time logged for yesterday</p>
+            <div className="p-3 rounded-lg border border-red-500/20 bg-red-500/10">
+              <p className="text-sm font-medium text-red-400">Time Entry Missing</p>
+              <p className="text-xs text-neutral-400">No time logged for yesterday</p>
             </div>
-            <div className="p-3 rounded-lg border border-status-info/20 bg-status-info/5">
-              <p className="text-sm font-medium text-status-info">Milestone Due</p>
-              <p className="text-xs text-muted-foreground">Residential Tower design review due tomorrow</p>
+            <div className="p-3 rounded-lg border border-brand-red-500/20 bg-brand-red-500/10">
+              <p className="text-sm font-medium text-brand-red-400">Milestone Due</p>
+              <p className="text-xs text-neutral-400">Residential Tower design review due tomorrow</p>
             </div>
           </CardContent>
         </Card>

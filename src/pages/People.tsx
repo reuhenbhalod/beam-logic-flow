@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Edit, Trash2, User, Building, Mail, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -18,7 +18,7 @@ type Project = Database['public']['Tables']['projects']['Row']
 
 const People = () => {
   const [people, setPeople] = useState<Person[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
+  // const [projects, setProjects] = useState<Project[]>([]) // Currently unused
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -38,7 +38,7 @@ const People = () => {
 
   useEffect(() => {
     fetchPeople()
-    fetchProjects()
+    // fetchProjects() // Currently unused
   }, [])
 
   const fetchPeople = async () => {
@@ -55,20 +55,6 @@ const People = () => {
       console.error('Error fetching people:', err)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const fetchProjects = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('name', { ascending: true })
-
-      if (error) throw error
-      setProjects(data || [])
-    } catch (err) {
-      console.error('Error fetching projects:', err)
     }
   }
 
@@ -153,23 +139,32 @@ const People = () => {
     setIsEditDialogOpen(true)
   }
 
-  const getRoleColor = (role: string) => {
-    switch (role?.toLowerCase()) {
-      case 'engineer': return 'bg-red-100 text-red-700'
-      case 'architect': return 'bg-red-100 text-red-700'
-      case 'project manager': return 'bg-red-100 text-red-700'
-      case 'drafter': return 'bg-red-100 text-red-700'
-      case 'consultant': return 'bg-red-100 text-red-700'
-      default: return 'bg-red-100 text-red-700'
-    }
-  }
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-          <p className="mt-2 text-slate-500">Loading people...</p>
+      <div className="space-y-8">
+        <div className="bg-gradient-to-br from-black via-gray-900 to-red-950 rounded-3xl border border-red-900/20 shadow-2xl overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-red-600/20 via-transparent to-red-800/10"></div>
+          </div>
+          <div className="relative z-10 px-8 py-8">
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-700 to-red-900 rounded-3xl flex items-center justify-center shadow-2xl border border-red-600/30">
+                <User className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-white mb-2">People</h1>
+                <p className="text-red-200 text-xl font-medium">Loading team members...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-red-800 border-t-white mx-auto shadow-lg"></div>
+            <p className="mt-4 text-red-800 text-xl font-semibold">Loading people data...</p>
+            <p className="text-gray-600 mt-1">Please wait while we fetch team information</p>
+          </div>
         </div>
       </div>
     )
@@ -178,34 +173,34 @@ const People = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-red-50 to-red-100 px-8 py-6 border-b border-red-200">
+      <div className="modern-card">
+        <div className="bg-gradient-to-r from-red-950/50 to-red-900/30 px-8 py-6 border-b border-red-800/30">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-800 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg">
               <User className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">People</h1>
-              <p className="text-slate-600 text-lg font-medium">Manage your team members and their roles</p>
+              <h1 className="text-3xl font-bold text-white">People</h1>
+              <p className="text-gray-400 text-lg font-medium">Manage your team members and their roles</p>
             </div>
           </div>
         </div>
         
         <div className="px-8 py-6 flex justify-between items-center">
-          <div className="text-slate-500">
-            <span className="font-medium">{people.length}</span> team members
+          <div className="text-gray-400">
+            <span className="font-medium text-white">{people.length}</span> team members
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-red-800 hover:bg-red-900 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 text-base font-bold rounded-2xl">
+              <Button className="modern-btn-primary">
                 <Plus className="h-6 w-6 mr-3" />
                 Add Person
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-gray-900 border-gray-700">
               <DialogHeader className="pb-4">
-                <DialogTitle className="text-xl font-bold text-slate-800">Add New Team Member</DialogTitle>
-                <DialogDescription className="text-slate-600">
+                <DialogTitle className="text-xl font-bold text-white">Add New Team Member</DialogTitle>
+                <DialogDescription className="text-gray-400">
                   Add a new person to your team
                 </DialogDescription>
               </DialogHeader>
@@ -294,10 +289,10 @@ const People = () => {
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-gray-600 text-gray-300 hover:bg-gray-800">
                     Cancel
                   </Button>
-                                   <Button type="submit" className="bg-red-800 hover:bg-red-900 text-white">
+                  <Button type="submit" className="modern-btn-primary">
                    Add Person
                  </Button>
                 </div>
@@ -308,44 +303,44 @@ const People = () => {
       </div>
 
       {error && (
-        <Alert>
-          <AlertDescription>{error}</AlertDescription>
+        <Alert className="modern-alert-danger">
+          <AlertDescription className="text-red-400">{error}</AlertDescription>
         </Alert>
       )}
 
       {/* People Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {people.map((person) => (
-          <Card key={person.id} className="engineering-card hover:shadow-xl transition-all duration-300 group">
+          <Card key={person.id} className="modern-card group">
             <CardHeader className="pb-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                                     <CardTitle className="text-xl font-bold text-slate-800 group-hover:text-red-700 transition-colors flex items-center gap-3">
+                  <CardTitle className="text-xl font-bold text-white group-hover:text-red-300 transition-colors flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-red-700 to-red-800 rounded-full flex items-center justify-center text-white font-bold text-sm">
                       {person.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                     </div>
                     {person.name}
                   </CardTitle>
                   {person.role && (
-                    <Badge className={`${getRoleColor(person.role)} px-3 py-1 rounded-full font-medium shadow-sm text-sm mt-2`}>
+                    <Badge className="bg-red-900/20 text-red-400 border-red-400/20 border px-3 py-1 rounded-full font-medium shadow-sm text-sm mt-2">
                       {person.role}
                     </Badge>
                   )}
                 </div>
                 <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                     <Button
-                     variant="ghost"
-                     size="sm"
-                     className="hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-xl"
-                     onClick={() => openEditDialog(person)}
-                     data-interactive
-                   >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-red-900/20 hover:text-red-400 transition-all duration-200 rounded-xl"
+                    onClick={() => openEditDialog(person)}
+                    data-interactive
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-xl"
+                    className="hover:bg-red-900/20 hover:text-red-400 transition-all duration-200 rounded-xl"
                     onClick={() => handleDeletePerson(person.id)}
                     data-interactive
                   >
@@ -362,30 +357,30 @@ const People = () => {
                 </div>
               )}
               
-                             {person.email && (
-                 <div className="flex items-center space-x-3 text-slate-600">
-                   <Mail className="h-4 w-4 text-red-800" />
+              {person.email && (
+                <div className="flex items-center space-x-3 text-gray-300 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+                  <Mail className="h-4 w-4 text-red-400" />
                   <span className="text-sm">{person.email}</span>
                 </div>
               )}
               
-                             {person.phone && (
-                 <div className="flex items-center space-x-3 text-slate-600">
-                   <Phone className="h-4 w-4 text-red-800" />
+              {person.phone && (
+                <div className="flex items-center space-x-3 text-gray-300 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+                  <Phone className="h-4 w-4 text-red-400" />
                   <span className="text-sm">{person.phone}</span>
                 </div>
               )}
               
-              {person.hourly_rate && person.hourly_rate > 0 && (
-                                 <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border border-red-200 shadow-sm">
-                   <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Hourly Rate</div>
-                   <div className="font-bold text-red-800 text-xl">${person.hourly_rate}/hr</div>
+              {Boolean(person.hourly_rate && person.hourly_rate > 0) && (
+                <div className="text-center p-4 bg-gradient-to-br from-red-950/50 to-red-900/30 rounded-2xl border border-red-800/30 shadow-sm">
+                  <div className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">Hourly Rate</div>
+                  <div className="font-bold text-red-400 text-xl">${person.hourly_rate}/hr</div>
                 </div>
               )}
               
               {person.notes && (
-                <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">
-                  <div className="font-medium text-slate-700 mb-1">Notes:</div>
+                <div className="text-sm text-gray-300 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+                  <div className="font-medium text-gray-200 mb-1">Notes:</div>
                   {person.notes}
                 </div>
               )}
@@ -396,10 +391,10 @@ const People = () => {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-gray-900 border-gray-700">
           <DialogHeader className="pb-4">
-            <DialogTitle className="text-xl font-bold text-slate-800">Edit Team Member</DialogTitle>
-            <DialogDescription className="text-slate-600">
+            <DialogTitle className="text-xl font-bold text-white">Edit Team Member</DialogTitle>
+            <DialogDescription className="text-gray-400">
               Update team member details
             </DialogDescription>
           </DialogHeader>

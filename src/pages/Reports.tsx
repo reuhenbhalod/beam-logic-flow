@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useAuth } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 
@@ -22,7 +21,7 @@ const Reports = () => {
   const [reportType, setReportType] = useState('all')
   const [dateRange, setDateRange] = useState('month')
   const [searchTerm, setSearchTerm] = useState('')
-  const { user } = useAuth()
+  // const { user } = useAuth() // Currently unused but may be needed for user-specific reports
 
   useEffect(() => {
     fetchData()
@@ -48,210 +47,194 @@ const Reports = () => {
   }
 
   const generateReport = (type: string) => {
-    let data: any
-    let filename: string
-    let contentType: string
-
-    switch (type) {
-      case 'csv':
-        data = generateCSV()
-        filename = `project-report-${new Date().toISOString().split('T')[0]}.csv`
-        contentType = 'text/csv'
-        break
-      case 'pdf':
-        // For now, generate a formatted text report that can be printed as PDF
-        data = generatePDFReport()
-        filename = `project-report-${new Date().toISOString().split('T')[0]}.txt`
-        contentType = 'text/plain'
-        break
-      case 'email':
-        generateEmailReport()
-        return
-      default:
-        data = {
-          projects,
-          timeEntries,
-          generatedAt: new Date().toISOString(),
-          user: user?.email,
-        }
-        filename = `${type}-report-${new Date().toISOString().split('T')[0]}.json`
-        contentType = 'application/json'
-    }
-
-    const blob = new Blob([data], { type: contentType })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
-  const generateCSV = () => {
-    const headers = ['Project Name', 'Client', 'Type', 'Fee', 'Hours', 'Cost', 'Margin', 'Status', 'Progress']
-    const rows = projects.map(project => {
+    // Generate CSV data
+    const csvData = projects.map(project => {
       const projectHours = timeEntries
         .filter(entry => entry.project_id === project.id)
-        .reduce((sum, entry) => sum + entry.hours, 0)
-      const projectCost = projectHours * (project.target_hourly_rate || 0)
-      const margin = (project.fee || 0) - projectCost
-      
+        .reduce((sum, entry) => sum + (entry.hours || 0), 0)
+
+      const projectCost = projectHours * 100 // Assuming $100/hour average rate
+
       return [
         project.name,
-        project.client_name || 'N/A',
-        project.project_type || 'N/A',
-        project.fee || 0,
-        projectHours,
-        projectCost.toFixed(2),
-        margin.toFixed(2),
         project.status,
-        project.progress
-      ].join(',')
+        `${project.progress}%`,
+        `${projectHours.toFixed(1)} hrs`,
+        `$${projectCost.toFixed(2)}`,
+        project.project_type || 'N/A',
+        `$${project.fee?.toLocaleString() || '0'}`,
+        `$${project.budget?.toLocaleString() || '0'}`
+      ]
     })
-    
-    return [headers.join(','), ...rows].join('\n')
-  }
 
-  const generatePDFReport = () => {
-    const report = [
-      'PROJECT MANAGEMENT REPORT',
-      'Generated: ' + new Date().toLocaleDateString(),
-      'User: ' + (user?.email || 'Unknown'),
-      '',
-      'PROJECT SUMMARY:',
-      'Total Projects: ' + projects.length,
-      'Active Projects: ' + projects.filter(p => p.status === 'active').length,
-      'Total Hours: ' + timeEntries.reduce((sum, entry) => sum + entry.hours, 0),
-      'Total Fees: $' + projects.reduce((sum, p) => sum + (p.fee || 0), 0).toLocaleString(),
-      '',
-      'PROJECT DETAILS:',
-      ...projects.map(project => {
+    if (type === 'csv') {
+      const csvContent = [
+        ['Project Name', 'Status', 'Progress', 'Hours', 'Cost', 'Type', 'Fee', 'Budget'],
+        ...csvData
+      ].map(row => row.join(',')).join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'projects_report.csv'
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } else if (type === 'pdf') {
+      // Create a simple text-based PDF content
+      const pdfContent = projects.map(project => {
         const projectHours = timeEntries
           .filter(entry => entry.project_id === project.id)
-          .reduce((sum, entry) => sum + entry.hours, 0)
+          .reduce((sum, entry) => sum + (entry.hours || 0), 0)
+
         return [
-          '  ' + project.name,
-          '    Client: ' + (project.client_name || 'N/A'),
-          '    Fee: $' + (project.fee || 0).toLocaleString(),
-          '    Hours: ' + projectHours,
-          '    Progress: ' + project.progress + '%',
-          '    Status: ' + project.status,
+          `Project: ${project.name}`,
+          `  Status: ${project.status}`,
+          `  Progress: ${project.progress}%`,
+          `  Hours: ${projectHours.toFixed(1)}`,
+          `  Type: ${project.project_type || 'N/A'}`,
+          `  Fee: $${project.fee?.toLocaleString() || '0'}`,
+          `  Budget: $${project.budget?.toLocaleString() || '0'}`,
           ''
         ].join('\n')
-      })
-    ].join('\n')
-    
-    return report
+      }).join('\n')
+
+      const blob = new Blob([pdfContent], { type: 'text/plain' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'projects_report.txt'
+      a.click()
+      window.URL.revokeObjectURL(url)
+    }
   }
-
-  const generateEmailReport = () => {
-    const subject = encodeURIComponent('Project Management Report - ' + new Date().toLocaleDateString())
-    const body = encodeURIComponent(generatePDFReport())
-    const mailtoLink = `mailto:?subject=${subject}&body=${body}`
-    window.open(mailtoLink)
-  }
-
-  const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const totalHours = timeEntries.reduce((sum, entry) => sum + entry.hours, 0)
-  const avgProgress = projects.length > 0 ? projects.reduce((sum, p) => sum + p.progress, 0) / projects.length : 0
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-engineering-red mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading reports...</p>
+      <div className="space-y-8">
+        <div className="bg-gradient-to-br from-black via-gray-900 to-red-950 rounded-3xl border border-red-900/20 shadow-2xl overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-red-600/20 via-transparent to-red-800/10"></div>
+          </div>
+          <div className="relative z-10 px-8 py-8">
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-700 to-red-900 rounded-3xl flex items-center justify-center shadow-2xl border border-red-600/30">
+                <FileText className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-white mb-2">Reports</h1>
+                <p className="text-red-200 text-xl font-medium">Loading report data...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-red-800 border-t-white mx-auto shadow-lg"></div>
+            <p className="mt-4 text-red-800 text-xl font-semibold">Loading reports...</p>
+            <p className="text-gray-600 mt-1">Please wait while we generate your data</p>
+          </div>
         </div>
       </div>
     )
   }
 
+  const filteredProjects = projects.filter(project =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Reports</h1>
-          <p className="text-muted-foreground">Generate and download project reports</p>
+      <div className="modern-card">
+        <div className="bg-gradient-to-r from-red-950/50 to-red-900/30 px-8 py-6 border-b border-red-800/30">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <FileText className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Reports</h1>
+              <p className="text-gray-400 text-lg font-medium">Generate and download project reports</p>
+            </div>
+          </div>
         </div>
-        <div className="flex space-x-2">
-          <Button
-            variant="outline"
-            onClick={() => generateReport('csv')}
-            className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => generateReport('pdf')}
-            className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Export PDF
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => generateReport('email')}
-            className="border-engineering-red text-engineering-red hover:bg-engineering-red hover:text-white"
-          >
-            <Calendar className="h-4 w-4 mr-2" />
-            Email Report
-          </Button>
+        
+        <div className="px-8 py-6 flex justify-between items-center">
+          <div className="text-gray-400">
+            <span className="font-medium text-white">{projects.length}</span> projects available
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => generateReport('csv')}
+              className="border-red-600 text-red-400 hover:bg-red-900/20 hover:text-red-300"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => generateReport('pdf')}
+              className="border-red-600 text-red-400 hover:bg-red-900/20 hover:text-red-300"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button
+              onClick={() => fetchData()}
+              className="modern-btn-primary"
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Filters */}
-      <Card className="engineering-card">
+      <Card className="modern-card">
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Filter className="h-5 w-5 mr-2" />
-            Filters
+          <CardTitle className="text-white flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filters & Search
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="search">Search Projects</Label>
+              <Label className="text-gray-300">Search Projects</Label>
               <Input
-                id="search"
-                placeholder="Search projects..."
+                placeholder="Search by project name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="report-type">Report Type</Label>
+              <Label className="text-gray-300">Report Type</Label>
               <Select value={reportType} onValueChange={setReportType}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Projects</SelectItem>
-                  <SelectItem value="active">Active Only</SelectItem>
-                  <SelectItem value="completed">Completed Only</SelectItem>
-                  <SelectItem value="planning">Planning Only</SelectItem>
+                <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectItem value="all" className="text-white">All Projects</SelectItem>
+                  <SelectItem value="active" className="text-white">Active Projects</SelectItem>
+                  <SelectItem value="completed" className="text-white">Completed Projects</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="date-range">Date Range</Label>
+              <Label className="text-gray-300">Date Range</Label>
               <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
-                  <SelectItem value="quarter">This Quarter</SelectItem>
-                  <SelectItem value="year">This Year</SelectItem>
+                <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectItem value="week" className="text-white">This Week</SelectItem>
+                  <SelectItem value="month" className="text-white">This Month</SelectItem>
+                  <SelectItem value="quarter" className="text-white">This Quarter</SelectItem>
+                  <SelectItem value="year" className="text-white">This Year</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -259,201 +242,117 @@ const Reports = () => {
         </CardContent>
       </Card>
 
-      {/* Summary Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="engineering-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{filteredProjects.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {filteredProjects.filter(p => p.status === 'active').length} active
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="engineering-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalHours}</div>
-            <p className="text-xs text-muted-foreground">
-              {Math.round(totalHours / 8)} work days
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="engineering-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-engineering-red" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-engineering-red">{Math.round(avgProgress)}%</div>
-            <p className="text-xs text-muted-foreground">
-              Across all projects
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="engineering-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {projects.length > 0 ? Math.round((projects.filter(p => p.status === 'completed').length / projects.length) * 100) : 0}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Projects completed
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Projects Table */}
-      <Card className="engineering-card">
+      <Card className="modern-card">
         <CardHeader>
-          <CardTitle>Project Details</CardTitle>
-          <CardDescription>Detailed view of all projects</CardDescription>
+          <CardTitle className="text-white">Project Overview</CardTitle>
+          <CardDescription className="text-gray-400">
+            Detailed breakdown of all projects and their metrics
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Project Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Progress</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Updated</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProjects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell className="font-medium">{project.name}</TableCell>
-                  <TableCell>
-                    <Badge className={
-                      project.status === 'active' ? 'bg-status-active' :
-                      project.status === 'completed' ? 'bg-status-info' :
-                      project.status === 'on-hold' ? 'bg-status-danger' :
-                      'bg-status-warning'
-                    }>
-                      {project.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={project.progress} className="w-20" />
-                      <span className="text-sm">{project.progress}%</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{new Date(project.created_at).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(project.updated_at).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => generateReport(`project-${project.id}`)}
-                      data-interactive
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-gray-700">
+                  <TableHead className="text-gray-300">Project</TableHead>
+                  <TableHead className="text-gray-300">Status</TableHead>
+                  <TableHead className="text-gray-300">Progress</TableHead>
+                  <TableHead className="text-gray-300">Hours</TableHead>
+                  <TableHead className="text-gray-300">Type</TableHead>
+                  <TableHead className="text-gray-300">Fee</TableHead>
+                  <TableHead className="text-gray-300">Budget</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredProjects.map((project) => {
+                  const projectHours = timeEntries
+                    .filter(entry => entry.project_id === project.id)
+                    .reduce((sum, entry) => sum + (entry.hours || 0), 0)
+
+                  const getStatusColor = (status: string) => {
+                    switch (status) {
+                      case 'active': return 'bg-green-900/20 text-green-400 border-green-400/20'
+                      case 'completed': return 'bg-blue-900/20 text-blue-400 border-blue-400/20'
+                      case 'on-hold': return 'bg-yellow-900/20 text-yellow-400 border-yellow-400/20'
+                      default: return 'bg-gray-900/20 text-gray-400 border-gray-400/20'
+                    }
+                  }
+
+                  return (
+                    <TableRow key={project.id} className="border-gray-700 hover:bg-red-950/20">
+                      <TableCell className="font-medium text-white">{project.name}</TableCell>
+                      <TableCell>
+                        <Badge className={`${getStatusColor(project.status)} border`}>
+                          {project.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <Progress value={project.progress} className="w-16 h-2" />
+                          <span className="text-gray-300 text-sm">{project.progress}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-300">{projectHours.toFixed(1)}h</TableCell>
+                      <TableCell className="text-gray-300">{project.project_type || 'N/A'}</TableCell>
+                      <TableCell className="text-gray-300">${project.fee?.toLocaleString() || '0'}</TableCell>
+                      <TableCell className="text-gray-300">${project.budget?.toLocaleString() || '0'}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Time Entries Summary */}
-      <Card className="engineering-card">
-        <CardHeader>
-          <CardTitle>Time Entries Summary</CardTitle>
-          <CardDescription>Recent time tracking entries</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Project</TableHead>
-                <TableHead>Hours</TableHead>
-                <TableHead>Description</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {timeEntries.slice(0, 10).map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    {projects.find(p => p.id === entry.project_id)?.name || 'Unknown Project'}
-                  </TableCell>
-                  <TableCell>{entry.hours}</TableCell>
-                  <TableCell className="max-w-xs truncate">{entry.description}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Quick Reports */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="engineering-card">
-          <CardHeader>
-            <CardTitle>Project Status Report</CardTitle>
-            <CardDescription>Breakdown by project status</CardDescription>
+      {/* Summary Stats */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="modern-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Total Projects</CardTitle>
+            <FileText className="h-4 w-4 text-red-400" />
           </CardHeader>
-          <CardContent className="space-y-4">
-            {['active', 'completed', 'planning', 'on-hold'].map((status) => {
-              const count = projects.filter(p => p.status === status).length
-              const percentage = projects.length > 0 ? (count / projects.length) * 100 : 0
-              return (
-                <div key={status} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${
-                      status === 'active' ? 'bg-status-active' :
-                      status === 'completed' ? 'bg-status-info' :
-                      status === 'on-hold' ? 'bg-status-danger' :
-                      'bg-status-warning'
-                    }`}></div>
-                    <span className="capitalize">{status}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium">{count}</span>
-                    <span className="text-sm text-muted-foreground">({Math.round(percentage)}%)</span>
-                  </div>
-                </div>
-              )
-            })}
+          <CardContent>
+            <div className="text-2xl font-bold text-white">{projects.length}</div>
           </CardContent>
         </Card>
 
-        <Card className="engineering-card">
-          <CardHeader>
-            <CardTitle>Time Tracking Summary</CardTitle>
-            <CardDescription>Hours by project</CardDescription>
+        <Card className="modern-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Active Projects</CardTitle>
+            <TrendingUp className="h-4 w-4 text-red-400" />
           </CardHeader>
-          <CardContent className="space-y-4">
-            {projects.slice(0, 5).map((project) => {
-              const projectHours = timeEntries
-                .filter(entry => entry.project_id === project.id)
-                .reduce((sum, entry) => sum + entry.hours, 0)
-              return (
-                <div key={project.id} className="flex items-center justify-between">
-                  <span className="text-sm font-medium truncate">{project.name}</span>
-                  <span className="text-sm text-muted-foreground">{projectHours}h</span>
-                </div>
-              )
-            })}
+          <CardContent>
+            <div className="text-2xl font-bold text-white">
+              {projects.filter(p => p.status === 'active').length}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="modern-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Total Hours</CardTitle>
+            <Clock className="h-4 w-4 text-red-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-white">
+              {timeEntries.reduce((sum, entry) => sum + (entry.hours || 0), 0).toFixed(1)}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="modern-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400">Avg Progress</CardTitle>
+            <Calendar className="h-4 w-4 text-red-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-white">
+              {projects.length > 0 
+                ? Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)
+                : 0}%
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -461,4 +360,4 @@ const Reports = () => {
   )
 }
 
-export default Reports 
+export default Reports

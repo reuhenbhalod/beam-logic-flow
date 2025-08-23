@@ -2,76 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Engineering App Design System - Red/White Abstract Theme 
-All colors MUST be HSL. Modern red/white design for structural engineering firm.
+/* Engineering App Design System - Dark Red/White/Black Professional Theme 
+All colors MUST be HSL. Sophisticated design matching Analysis page styling.
 */
 
 @layer base {
   :root {
-    --background: 247 248 250;
-    --foreground: 51 65 85;
+    --background: 15 15 15; /* Dark background */
+    --foreground: 255 255 255;
 
     --card: 255 255 255;
-    --card-foreground: 51 65 85;
+    --card-foreground: 0 0 0;
+
+    --card-dark: 23 23 23; /* Dark cards */
+    --card-dark-foreground: 255 255 255;
 
     --popover: 255 255 255;
-    --popover-foreground: 51 65 85;
+    --popover-foreground: 0 0 0;
 
-    --primary: 153 27 27;
+    --primary: 153 27 27; /* Dark red */
     --primary-foreground: 255 255 255;
 
     --secondary: 248 250 252;
     --secondary-foreground: 51 65 85;
 
-    --muted: 248 250 252;
-    --muted-foreground: 100 116 139;
+    --muted: 115 115 115;
+    --muted-foreground: 163 163 163;
 
-    --accent: 248 250 252;
-    --accent-foreground: 51 65 85;
+    --accent: 153 27 27;
+    --accent-foreground: 255 255 255;
 
-    --destructive: 239 68 68;
+    --destructive: 153 27 27;
     --destructive-foreground: 255 255 255;
 
-    --border: 226 232 240;
-    --input: 226 232 240;
+    --border: 64 64 64;
+    --input: 64 64 64;
     --ring: 153 27 27;
 
-    /* Engineering specific colors - red only */
-    --engineering-red: 153 27 27;
-    --engineering-red-light: 185 28 28;
-    --engineering-red-dark: 127 29 29;
-    --engineering-gray: 100 116 139;
-    --engineering-gray-light: 148 163 184;
+    /* Engineering specific colors - red/black theme */
+    --engineering-red: 153 27 27; /* #991B1B */
+    --engineering-red-light: 185 28 28; /* #B91C1C */
+    --engineering-red-dark: 127 29 29; /* #7F1D1D */
+    --engineering-red-darker: 69 26 3; /* Very dark red */
+    --engineering-black: 15 15 15;
+    --engineering-gray: 115 115 115;
+    --engineering-gray-light: 163 163 163;
     
-    /* Status colors - red variants only */
+    /* Status colors - red/black variants */
     --status-active: 153 27 27;
     --status-warning: 185 28 28;
     --status-danger: 127 29 29;
     --status-info: 153 27 27;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--engineering-red-light)));
-    --gradient-card: linear-gradient(180deg, hsl(var(--card)), hsl(var(--muted)));
-    --gradient-abstract: linear-gradient(45deg, hsl(var(--primary) / 0.1), hsl(var(--accent) / 0.05));
+    /* Enhanced Gradients */
+    --gradient-primary-dark: linear-gradient(135deg, hsl(var(--engineering-black)), hsl(var(--engineering-red-dark)));
+    --gradient-card-dark: linear-gradient(180deg, hsl(var(--engineering-black)), hsl(var(--engineering-red-darker)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--engineering-black)) 0%, hsl(15 15 15) 25%, hsl(var(--engineering-red-dark)) 100%);
+    --gradient-accent: linear-gradient(45deg, hsl(var(--engineering-red) / 0.1), hsl(var(--engineering-red-light) / 0.05));
     
-    /* Shadows - subtle */
-    --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-glow: 0 0 20px rgb(0 0 0 / 0.08);
+    /* Professional Shadows */
+    --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+    --shadow-dramatic: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+    --shadow-glow-red: 0 0 20px rgb(153 27 27 / 0.3);
 
-    --radius: 1rem;
+    --radius: 1.5rem;
 
-    --sidebar-background: 255 255 255;
-    --sidebar-foreground: 51 65 85;
+    /* Sidebar colors - dark theme */
+    --sidebar-background: 23 23 23;
+    --sidebar-foreground: 255 255 255;
     --sidebar-primary: 153 27 27;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 248 250 252;
-    --sidebar-accent-foreground: 51 65 85;
-    --sidebar-border: 226 232 240;
+    --sidebar-accent: 38 38 38;
+    --sidebar-accent-foreground: 255 255 255;
+    --sidebar-border: 64 64 64;
     --sidebar-ring: 153 27 27;
   }
-
-
 }
 
 @layer base {
@@ -80,53 +86,144 @@ All colors MUST be HSL. Modern red/white design for structural engineering firm.
   }
 
   body {
-    @apply bg-[#F7F8FA] text-slate-700;
+    @apply bg-black text-white;
+    background: linear-gradient(135deg, hsl(15 15 15) 0%, hsl(0 0 0) 50%, hsl(var(--engineering-red-darker)) 100%);
+    background-attachment: fixed;
     overflow-x: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
   }
 
-
-
-  /* Abstract background patterns - subtle */
+  /* Professional abstract background patterns */
   .abstract-bg {
     background: 
-      radial-gradient(circle at 20% 50%, hsl(var(--engineering-red) / 0.01) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(var(--engineering-red) / 0.02) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, hsl(var(--engineering-red) / 0.01) 0%, transparent 50%);
+      radial-gradient(circle at 20% 80%, hsl(var(--engineering-red) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(var(--engineering-red-light) / 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, hsl(var(--engineering-red-dark) / 0.06) 0%, transparent 50%),
+      linear-gradient(135deg, hsl(15 15 15) 0%, hsl(0 0 0) 100%);
   }
 
-  /* Button hover states */
-  button:hover, 
-  [role="button"]:hover,
-  a:hover {
-    cursor: pointer;
-  }
-
-  /* Engineering card styling - light theme */
+  /* Enhanced engineering card styling */
   .engineering-card {
-    @apply bg-white border border-slate-200 rounded-2xl shadow-sm;
-    transition: all 0.2s ease;
+    @apply bg-gradient-to-br from-white to-gray-50 border border-red-900/20 rounded-3xl shadow-2xl;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .engineering-card:hover {
-    @apply shadow-md;
+    @apply shadow-3xl;
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  .engineering-card-dark {
+    @apply bg-gradient-to-br from-red-950 to-black border border-red-800/30 rounded-3xl shadow-2xl;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .engineering-card-dark:hover {
+    @apply shadow-3xl;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-dramatic), var(--shadow-glow-red);
+  }
+
+  /* Professional button styles */
+  .btn-primary {
+    @apply bg-gradient-to-r from-red-700 to-red-800 text-white rounded-2xl px-6 py-3 font-semibold shadow-lg hover:shadow-xl;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-primary:hover {
+    @apply from-red-600 to-red-700;
     transform: translateY(-1px);
   }
 
-  /* Status indicator styles - light theme */
+  .btn-secondary {
+    @apply bg-gradient-to-r from-white to-gray-50 text-red-900 rounded-2xl px-6 py-3 font-semibold shadow-lg hover:shadow-xl border border-red-200;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-secondary:hover {
+    @apply from-red-50 to-red-100;
+    transform: translateY(-1px);
+  }
+
+  /* Status indicator styles - professional theme */
   .status-active {
-    @apply bg-red-100 text-red-700;
+    @apply bg-gradient-to-r from-red-700 to-red-800 text-white rounded-xl px-3 py-1 text-xs font-semibold shadow-sm;
   }
   
   .status-warning {
-    @apply bg-red-100 text-red-700;
+    @apply bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl px-3 py-1 text-xs font-semibold shadow-sm;
   }
   
   .status-danger {
-    @apply bg-red-100 text-red-700;
+    @apply bg-gradient-to-r from-red-800 to-red-900 text-white rounded-xl px-3 py-1 text-xs font-semibold shadow-sm;
   }
   
   .status-info {
-    @apply bg-red-100 text-red-700;
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl px-3 py-1 text-xs font-semibold shadow-sm;
+  }
+
+  /* Professional navigation styles */
+  .nav-link {
+    @apply relative flex items-center px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300;
+    background: linear-gradient(135deg, transparent 0%, hsl(var(--engineering-red) / 0.05) 100%);
+  }
+
+  .nav-link:hover {
+    @apply bg-gradient-to-r from-red-950/80 to-black/80 text-red-200 shadow-lg;
+    transform: translateX(4px);
+  }
+
+  .nav-link.active {
+    @apply bg-gradient-to-r from-red-800 to-red-900 text-white shadow-xl;
+    box-shadow: var(--shadow-glow-red);
+  }
+
+  /* Enhanced form inputs */
+  .form-input {
+    @apply bg-black/40 border border-red-800/50 rounded-2xl px-4 py-3 text-white placeholder-red-300/60;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .form-input:focus {
+    @apply border-red-600 ring-2 ring-red-600/20;
+    box-shadow: 0 0 20px hsl(var(--engineering-red) / 0.3);
+  }
+
+  /* Professional loading animations */
+  @keyframes pulse-red {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .animate-pulse-red {
+    animation: pulse-red 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-red {
+    0%, 100% { box-shadow: 0 0 20px hsl(var(--engineering-red) / 0.2); }
+    50% { box-shadow: 0 0 30px hsl(var(--engineering-red) / 0.4); }
+  }
+
+  .animate-glow-red {
+    animation: glow-red 3s ease-in-out infinite;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-black/20;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-red-800/60 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-red-700/80;
   }
 }

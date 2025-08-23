@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Eye, Calendar, User, Clock, AlertTriangle, Target } from 'lucide-react'
+import { Plus, Edit, Trash2, Calendar, Clock, AlertTriangle, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,10 +19,10 @@ type Project = Database['public']['Tables']['projects']['Row']
 // Helper functions
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'active': return 'bg-status-active'
-    case 'completed': return 'bg-status-info'
-    case 'on-hold': return 'bg-status-warning'
-    default: return 'bg-status-warning'
+    case 'active': return 'bg-green-900/20 text-green-400 border-green-400/20'
+    case 'completed': return 'bg-blue-900/20 text-blue-400 border-blue-400/20'
+    case 'on-hold': return 'bg-yellow-900/20 text-yellow-400 border-yellow-400/20'
+    default: return 'bg-gray-900/20 text-gray-400 border-gray-400/20'
   }
 }
 
@@ -45,20 +44,20 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
   hasTimeEntries: boolean 
 }) => {
   return (
-    <Card className="engineering-card hover:shadow-xl transition-all duration-300 group">
+    <Card className="modern-card group">
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <CardTitle className="text-xl font-bold text-slate-800 group-hover:text-red-700 transition-colors">{project.name}</CardTitle>
-            <CardDescription className="mt-3 line-clamp-2 text-slate-600 text-base leading-relaxed">
+            <CardTitle className="text-xl font-bold text-white group-hover:text-red-300 transition-colors">{project.name}</CardTitle>
+            <p className="mt-3 line-clamp-2 text-gray-400 text-base leading-relaxed">
               {project.description}
-            </CardDescription>
+            </p>
           </div>
           <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-xl"
+              className="hover:bg-red-900/20 hover:text-red-400 transition-all duration-200 rounded-xl"
               onClick={() => onEdit(project)}
               data-interactive
             >
@@ -67,7 +66,7 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-red-50 hover:text-red-600 transition-all duration-200 rounded-xl"
+              className="hover:bg-red-900/20 hover:text-red-400 transition-all duration-200 rounded-xl"
               onClick={() => onDelete(project.id)}
               data-interactive
             >
@@ -79,31 +78,31 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <Badge className={`${getStatusColor(project.status)} px-4 py-2 rounded-full font-semibold shadow-sm text-sm`}>
+            <Badge className={`${getStatusColor(project.status)} px-4 py-2 rounded-full font-semibold shadow-sm text-sm border`}>
               {getStatusText(project.status)}
             </Badge>
             {hasTimeEntries && (
-              <div className="flex items-center text-red-800 bg-red-50 p-2 rounded-full shadow-sm" title="This project has time entries logged">
+              <div className="flex items-center text-red-400 bg-red-900/20 p-2 rounded-full shadow-sm border border-red-400/20" title="This project has time entries logged">
                 <AlertTriangle className="h-4 w-4" />
               </div>
             )}
           </div>
           <div className="text-right">
-                               <div className="text-2xl font-bold text-red-800">{project.progress}%</div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">Complete</div>
+            <div className="text-2xl font-bold text-red-400">{project.progress}%</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Complete</div>
           </div>
         </div>
         
         <div className="space-y-4 mb-6">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500 font-medium">Progress</span>
-              <span className="font-semibold text-slate-700">{project.progress}%</span>
+              <span className="text-gray-400 font-medium">Progress</span>
+              <span className="font-semibold text-gray-300">{project.progress}%</span>
             </div>
             <div className="relative">
-              <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-red-700 to-red-800 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-red-600 to-red-500 rounded-full transition-all duration-500"
                   style={{ width: `${project.progress}%` }}
                 ></div>
               </div>
@@ -112,24 +111,24 @@ const ProjectCard = ({ project, onEdit, onDelete, hasTimeEntries }: {
         </div>
         
         <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-          <div className="flex items-center space-x-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-            <Calendar className="h-5 w-5 text-red-800" />
+          <div className="flex items-center space-x-3 text-gray-300 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+            <Calendar className="h-5 w-5 text-red-400" />
             <span className="font-medium">{new Date(project.start_date || project.created_at).toLocaleDateString()}</span>
           </div>
-          <div className="flex items-center space-x-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-            <Clock className="h-5 w-5 text-red-800" />
+          <div className="flex items-center space-x-3 text-gray-300 bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+            <Clock className="h-5 w-5 text-red-400" />
             <span className="font-medium">{project.project_type || 'No Type'}</span>
           </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
-          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border border-red-200 shadow-sm">
-            <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Project Fee</div>
-            <div className="font-bold text-red-800 text-xl">${project.fee?.toLocaleString() || '0'}</div>
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700">
+          <div className="text-center p-4 bg-gradient-to-br from-red-950/50 to-red-900/30 rounded-2xl border border-red-800/30 shadow-sm">
+            <div className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">Project Fee</div>
+            <div className="font-bold text-red-400 text-xl">${project.fee?.toLocaleString() || '0'}</div>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border border-red-200 shadow-sm">
-            <div className="text-xs text-slate-600 mb-2 font-medium uppercase tracking-wide">Budget</div>
-            <div className="font-bold text-red-800 text-xl">${project.budget?.toLocaleString() || '0'}</div>
+          <div className="text-center p-4 bg-gradient-to-br from-red-950/50 to-red-900/30 rounded-2xl border border-red-800/30 shadow-sm">
+            <div className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">Budget</div>
+            <div className="font-bold text-red-400 text-xl">${project.budget?.toLocaleString() || '0'}</div>
           </div>
         </div>
       </CardContent>
@@ -208,7 +207,7 @@ const Projects = () => {
       if (error) throw error
 
       setIsCreateDialogOpen(false)
-      setFormData({ name: '', description: '', status: 'planning', progress: 0 })
+      setFormData({ name: '', description: '', status: 'planning', progress: 0, project_type: '', fee: 0, start_date: '', end_date: '', budget: 0 })
       fetchProjects()
     } catch (err) {
       setError('Failed to create project')
@@ -233,7 +232,7 @@ const Projects = () => {
 
       setIsEditDialogOpen(false)
       setEditingProject(null)
-      setFormData({ name: '', description: '', status: 'planning', progress: 0 })
+      setFormData({ name: '', description: '', status: 'planning', progress: 0, project_type: '', fee: 0, start_date: '', end_date: '', budget: 0 })
       fetchProjects()
     } catch (err) {
       setError('Failed to update project')
@@ -302,34 +301,34 @@ const Projects = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-red-50 to-red-100 px-8 py-6 border-b border-red-200">
+      <div className="modern-card">
+        <div className="bg-gradient-to-r from-red-950/50 to-red-900/30 px-8 py-6 border-b border-red-800/30">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg">
               <Target className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">Projects</h1>
-              <p className="text-slate-600 text-lg font-medium">Manage your engineering projects</p>
+              <h1 className="text-3xl font-bold text-white">Projects</h1>
+              <p className="text-gray-400 text-lg font-medium">Manage your engineering projects</p>
             </div>
           </div>
         </div>
         
         <div className="px-8 py-6 flex justify-between items-center">
-          <div className="text-slate-500">
-            <span className="font-medium">{projects.length}</span> total projects
+          <div className="text-gray-400">
+            <span className="font-medium text-white">{projects.length}</span> total projects
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-red-800 hover:bg-red-900 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 text-base font-bold rounded-2xl">
+              <Button className="modern-btn-primary">
                 <Plus className="h-6 w-6 mr-3" />
                 New Project
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
+            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-gray-900 border-gray-700">
               <DialogHeader className="pb-4">
-                <DialogTitle className="text-xl font-bold text-slate-800">Create New Project</DialogTitle>
-                <DialogDescription className="text-slate-600">
+                <DialogTitle className="text-xl font-bold text-white">Create New Project</DialogTitle>
+                <DialogDescription className="text-gray-400">
                   Add a new project to your portfolio
                 </DialogDescription>
               </DialogHeader>
@@ -445,10 +444,10 @@ const Projects = () => {
                   </div>
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-gray-600 text-gray-300 hover:bg-gray-800">
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-red-600 hover:bg-red-700 text-white">
+                  <Button type="submit" className="modern-btn-primary">
                     Create Project
                   </Button>
                 </div>
@@ -460,18 +459,18 @@ const Projects = () => {
 
       {/* Error Alert */}
       {error && (
-        <Alert className="border-status-danger">
-          <AlertDescription className="text-status-danger">{error}</AlertDescription>
+        <Alert className="modern-alert-danger">
+          <AlertDescription className="text-red-400">{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Projects Tabs */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-white p-2 rounded-3xl border border-slate-200 shadow-sm">
-          <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-2xl transition-all duration-300 font-medium">All Projects</TabsTrigger>
-          <TabsTrigger value="active" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-2xl transition-all duration-300 font-medium">Active</TabsTrigger>
-          <TabsTrigger value="completed" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-2xl transition-all duration-300 font-medium">Completed</TabsTrigger>
-          <TabsTrigger value="planning" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-2xl transition-all duration-300 font-medium">Planning</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 glass-card p-2 rounded-3xl border border-gray-700 shadow-sm">
+          <TabsTrigger value="all" className="modern-tab-trigger">All Projects</TabsTrigger>
+          <TabsTrigger value="active" className="modern-tab-trigger">Active</TabsTrigger>
+          <TabsTrigger value="completed" className="modern-tab-trigger">Completed</TabsTrigger>
+          <TabsTrigger value="planning" className="modern-tab-trigger">Planning</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-6">
